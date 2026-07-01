@@ -242,8 +242,10 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // ─── Configuration ───
-        const WS_URL = `ws://${location.host}/stream`;
+        // ─── Configuration الذكي المتوافق مع ترمكس و Render ───
+        // يتحقق تلقائياً إذا كان الموقع يعمل بـ https ليستخدم wss المشفر، وإلا يعتمد ws العادي
+        const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const WS_URL = `${protocol}//${location.host}/stream`;
         
         // ─── State ───
         let ws = null;
@@ -314,7 +316,6 @@
                     break;
                     
                 case 'frame':
-                    // استقبال إطار من جهاز معين
                     if (selectedDevice === 'all' || selectedDevice === data.deviceId) {
                         if (streamActive) {
                             renderFrame(data.image);
@@ -351,7 +352,7 @@
             const avgFps = Math.round(fpsValues.reduce((a, b) => a + b, 0) / fpsValues.length);
             document.getElementById('fps').textContent = avgFps;
             
-            // Latency (تقريبي)
+            // Latency
             document.getElementById('latency').textContent = elapsed + 'ms';
         }
 
@@ -360,7 +361,6 @@
             const list = document.getElementById('deviceList');
             const ids = Object.keys(devices);
             
-            // إبقاء "All Devices" في البداية
             let html = `<div class="device-item ${selectedDevice === 'all' ? 'active' : ''}" onclick="selectDevice(this)" data-id="all">
                 <span class="dot" style="background:#00d2ff"></span>
                 <div class="device-name">All Devices</div>
@@ -385,7 +385,6 @@
             selectedDevice = element.dataset.id;
             showToast(`📱 Watching: ${selectedDevice === 'all' ? 'All Devices' : 'Device ' + selectedDevice}`);
             
-            // إيقاف دفق الجهاز السابق وبدء الجديد
             if (streamActive) {
                 clearScreen();
             }
