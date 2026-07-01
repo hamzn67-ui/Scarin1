@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Screen Monitor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a1a;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ─── Header ─── */
+        .header {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a5e);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .header h1 {
+            font-size: 20px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #888;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-dot.online { background: #00ff88; box-shadow: 0 0 15px #00ff88; }
+        .status-dot.offline { background: #ff4444; }
+
+        /* ─── Main Layout ─── */
+        .container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        /* ─── Devices Sidebar ─── */
+        .sidebar {
+            width: 250px;
+            background: rgba(255,255,255,0.03);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .sidebar h2 {
+            font-size: 14px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        .device-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .device-item:hover { background: rgba(255,255,255,0.1); }
+        .device-item.active {
+            border-color: #00d2ff;
+            background: rgba(0,210,255,0.1);
+        }
+        .device-item .device-name { font-size: 14px; }
+        .device-item .device-id { font-size: 11px; color: #666; margin-top: 3px; }
+        .device-item .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        /* ─── Main Screen ─── */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .screen-wrapper {
+            flex: 1;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .screen-wrapper canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .screen-wrapper .placeholder {
+            text-align: center;
+            color: #444;
+        }
+        .screen-wrapper .placeholder .icon { font-size: 80px; margin-bottom: 20px; }
+        .screen-wrapper .placeholder h2 { font-size: 24px; margin-bottom: 10px; }
+        .screen-wrapper .placeholder p { font-size: 14px; }
+
+        /* ─── Controls ─── */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: linear-gradient(135deg, #00d2ff, #3a7bd5); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,210,255,0.3); }
+        .btn-danger { background: linear-gradient(135deg, #ff4444, #cc0000); color: #fff; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
+        /* ─── Stats ─── */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .stat {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .stat .value { font-size: 18px; font-weight: bold; color: #00d2ff; }
+        .stat .label { font-size: 11px; color: #666; margin-top: 3px; }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 768px) {
+            .sidebar { width: 80px; }
+            .sidebar .device-id { display: none; }
+            .stats { grid-template-columns: 1fr; }
+        }
+
+        /* ─── Notification ─── */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,210,255,0.9);
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📡 Live Monitor</h1>
+        <div class="status">
+            <span class="status-dot offline" id="connectionDot"></span>
+            <span id="connectionText">Disconnected</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar / Devices -->
+        <div class="sidebar">
+            <h2>Devices</h2>
+            <div id="deviceList">
+                <div class="device-item" onclick="selectDevice(this)" data-id="all">
+                    <span class="dot" style="background:#00d2ff"></span>
+                    <div class="device-name">All Devices</div>
+                    <div class="device-id">View all</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Screen -->
+        <div class="main">
+            <div class="screen-wrapper" id="screenWrapper">
+                <div class="placeholder" id="placeholder">
+                    <div class="icon">📱</div>
+                    <h2>No Device Selected</h2>
+                    <p>Choose a device from the sidebar to start monitoring</p>
+                </div>
+                <canvas id="screenCanvas" style="display:none;"></canvas>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" onclick="toggleStream()" id="streamBtn">▶ Start Stream</button>
+                <button class="btn btn-secondary" onclick="clearScreen()">🗑 Clear</button>
+                <button class="btn btn-secondary" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="value" id="fps">0</div>
+                    <div class="label">FPS</div>
+                </div>
+                <div class="stat">
+                    <div class="value" id="latency">0ms</div>
+                    <div class="label">Latency</div>
+                </div>
+                <div class="stat">
+                    <div class="value" id="framesReceived">0</div>
+                    <div class="label">Frames</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ─── Configuration ───
+        const WS_URL = `ws://${location.host}/stream`;
+        
+        // ─── State ───
+        let ws = null;
+        let selectedDevice = 'all';
+        let streamActive = false;
+        let frameCount = 0;
+        let lastFrameTime = Date.now();
+        let fpsValues = [];
+        let devices = {};
+        
+        // Canvas
+        const canvas = document.getElementById('screenCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // ─── WebSocket Connection ───
+        function connect() {
+            if (ws && ws.readyState === WebSocket.OPEN) return;
+            
+            ws = new WebSocket(`${WS_URL}?type=viewer&viewer=${Math.random().toString(36).substring(7)}`);
+            
+            ws.onopen = () => {
+                updateConnectionStatus(true);
+                showToast('🟢 Connected to server');
+            };
+            
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                } catch (e) {
+                    console.error('Parse error:', e);
+                }
+            };
+            
+            ws.onclose = () => {
+                updateConnectionStatus(false);
+                showToast('🔴 Disconnected, reconnecting...');
+                setTimeout(connect, 3000);
+            };
+            
+            ws.onerror = (e) => {
+                console.error('WebSocket error:', e);
+            };
+        }
+
+        function handleMessage(data) {
+            switch(data.type) {
+                case 'device_list':
+                    devices = {};
+                    data.devices.forEach(d => {
+                        devices[d.id] = { id: d.id, online: true };
+                    });
+                    renderDevices();
+                    break;
+                    
+                case 'device_online':
+                    devices[data.deviceId] = { id: data.deviceId, online: true };
+                    renderDevices();
+                    showToast(`📱 Device online: ${data.deviceId}`);
+                    break;
+                    
+                case 'device_offline':
+                    if (devices[data.deviceId]) {
+                        devices[data.deviceId].online = false;
+                    }
+                    renderDevices();
+                    showToast(`📱 Device offline: ${data.deviceId}`);
+                    break;
+                    
+                case 'frame':
+                    // استقبال إطار من جهاز معين
+                    if (selectedDevice === 'all' || selectedDevice === data.deviceId) {
+                        if (streamActive) {
+                            renderFrame(data.image);
+                            updateStats();
+                        }
+                    }
+                    break;
+            }
+        }
+
+        function renderFrame(base64Image) {
+            const img = new Image();
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                canvas.style.display = 'block';
+                document.getElementById('placeholder').style.display = 'none';
+                frameCount++;
+                document.getElementById('framesReceived').textContent = frameCount;
+            };
+            img.src = 'data:image/jpeg;base64,' + base64Image;
+        }
+
+        function updateStats() {
+            const now = Date.now();
+            const elapsed = now - lastFrameTime;
+            lastFrameTime = now;
+            
+            // FPS
+            const fps = Math.round(1000 / elapsed);
+            fpsValues.push(fps);
+            if (fpsValues.length > 10) fpsValues.shift();
+            const avgFps = Math.round(fpsValues.reduce((a, b) => a + b, 0) / fpsValues.length);
+            document.getElementById('fps').textContent = avgFps;
+            
+            // Latency (تقريبي)
+            document.getElementById('latency').textContent = elapsed + 'ms';
+        }
+
+        // ─── UI Functions ───
+        function renderDevices() {
+            const list = document.getElementById('deviceList');
+            const ids = Object.keys(devices);
+            
+            // إبقاء "All Devices" في البداية
+            let html = `<div class="device-item ${selectedDevice === 'all' ? 'active' : ''}" onclick="selectDevice(this)" data-id="all">
+                <span class="dot" style="background:#00d2ff"></span>
+                <div class="device-name">All Devices</div>
+                <div class="device-id">${Object.values(devices).filter(d => d.online).length} online</div>
+            </div>`;
+            
+            ids.forEach(id => {
+                const d = devices[id];
+                html += `<div class="device-item ${selectedDevice === id ? 'active' : ''}" onclick="selectDevice(this)" data-id="${id}">
+                    <span class="dot" style="background:${d.online ? '#00ff88' : '#ff4444'}"></span>
+                    <div class="device-name">Device ${id.substring(0, 4)}</div>
+                    <div class="device-id">${d.online ? '🟢 Online' : '🔴 Offline'}</div>
+                </div>`;
+            });
+            
+            list.innerHTML = html;
+        }
+
+        function selectDevice(element) {
+            document.querySelectorAll('.device-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            selectedDevice = element.dataset.id;
+            showToast(`📱 Watching: ${selectedDevice === 'all' ? 'All Devices' : 'Device ' + selectedDevice}`);
+            
+            // إيقاف دفق الجهاز السابق وبدء الجديد
+            if (streamActive) {
+                clearScreen();
+            }
+        }
+
+        function toggleStream() {
+            streamActive = !streamActive;
+            const btn = document.getElementById('streamBtn');
+            if (streamActive) {
+                btn.textContent = '⏹ Stop Stream';
+                btn.className = 'btn btn-danger';
+                showToast('▶️ Stream started');
+            } else {
+                btn.textContent = '▶ Start Stream';
+                btn.className = 'btn btn-primary';
+                showToast('⏹ Stream stopped');
+            }
+        }
+
+        function clearScreen() {
+            canvas.style.display = 'none';
+            document.getElementById('placeholder').style.display = 'flex';
+            frameCount = 0;
+            document.getElementById('framesReceived').textContent = '0';
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.getElementById('screenWrapper').requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function updateConnectionStatus(online) {
+            const dot = document.getElementById('connectionDot');
+            const text = document.getElementById('connectionText');
+            dot.className = `status-dot ${online ? 'online' : 'offline'}`;
+            text.textContent = online ? 'Connected' : 'Disconnected';
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        // ─── Start ───
+        connect();
+    </script>
+</body>
+</html>
