@@ -252,12 +252,12 @@
             min-width: 0;
         }
 
-        /* ─── الكانفاس بحجم كبير ─── */
+        /* ─── التعديل الأساسي هنا لجعل الكانفاس يملأ المساحة بالكامل ─── */
         #screenCanvas {
             display: block;
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: fill; /* تم التغيير من contain إلى fill لملء الأبعاد بالكامل وضمان اختفاء المساحات السوداء */
             position: absolute;
             top: 0;
             left: 0;
@@ -330,9 +330,6 @@
 </head>
 <body>
     <div class="app">
-        <!-- ════════════════════════════════════
-             منطقة الشاشة الحية (المركز)
-             ════════════════════════════════════ -->
         <div class="screen-area" id="screenArea">
             <div class="placeholder" id="placeholder">
                 <div class="icon">📡</div>
@@ -347,17 +344,12 @@
             </div>
         </div>
 
-        <!-- ════════════════════════════════════
-             الشريط الجانبي الأيمن (أزرار + اسم جهاز)
-             ════════════════════════════════════ -->
         <div class="sidebar-right">
-            <!-- الرأس -->
             <div class="sidebar-header">
                 <div class="logo">NEXUS</div>
                 <div class="sub">COMMAND CENTER</div>
             </div>
 
-            <!-- اسم الجهاز المتصل + حالته -->
             <div class="device-name-box">
                 <div class="label">TARGET</div>
                 <div class="name" id="currentDeviceName">ALL DEVICES</div>
@@ -367,7 +359,6 @@
                 </div>
             </div>
 
-            <!-- قائمة الأجهزة -->
             <div class="section-title">AVAILABLE TARGETS</div>
             <div class="device-scroll" id="deviceList">
                 <div class="device-item active" onclick="selectDevice('all')" data-id="all">
@@ -377,7 +368,6 @@
                 </div>
             </div>
 
-            <!-- الأزرار -->
             <div class="controls-section">
                 <button class="ctrl-btn danger active" onclick="toggleStream()" id="streamBtn">
                     <span class="icon">⏹</span>
@@ -401,7 +391,6 @@
                 </button>
             </div>
 
-            <!-- إحصائيات -->
             <div class="sidebar-stats">
                 <div class="stat">
                     <span class="val" id="fpsSide">0</span>
@@ -426,7 +415,6 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // ─── التهيئة ───
         const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
         const WS_URL = `${protocol}//${location.host}`;
         
@@ -442,10 +430,8 @@
         const canvas = document.getElementById('screenCanvas');
         const ctx = canvas.getContext('2d');
         
-        // ─── بدء التشغيل ───
         connect();
         
-        // ─── KEYBOARD SHORTCUTS ───
         document.addEventListener('keydown', (e) => {
             switch(e.key) {
                 case 'F1': e.preventDefault(); toggleStream(); break;
@@ -455,7 +441,6 @@
             }
         });
         
-        // ─── WebSocket ───
         function connect() {
             if (ws && ws.readyState === WebSocket.OPEN) return;
             
@@ -508,23 +493,23 @@
         function renderFrame(base64Image) {
             const img = new Image();
             img.onload = () => {
-                // الحصول على أبعاد الحاوية
                 const container = document.getElementById('screenArea');
                 const rect = container.getBoundingClientRect();
                 
-                // ضبط الكانفاس ليملأ الحاوية بالكامل
-                canvas.width = img.width;
-                canvas.height = img.height;
+                // تم تعديل إسناد الأبعاد ليتوافق الكانفاس داخلياً مع حجم الحاوية الفعلي بالبكسل وليس حجم الصورة الأصلية فقط
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+                
                 canvas.style.width = '100%';
                 canvas.style.height = '100%';
                 canvas.style.position = 'absolute';
                 canvas.style.top = '0';
                 canvas.style.left = '0';
-                canvas.style.objectFit = 'contain';
                 
-                // رسم الصورة بجودة عالية
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
+                
+                // رسم الصورة لتمتد على كامل أبعاد الكانفاس الجديد
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
                 document.getElementById('placeholder').style.display = 'none';
@@ -581,7 +566,6 @@
                 el.classList.toggle('active', el.dataset.id === id);
             });
             
-            // تحديث اسم الجهاز في الصندوق العلوي
             const nameBox = document.getElementById('currentDeviceName');
             nameBox.textContent = id === 'all' ? 'ALL DEVICES' : id.substring(0,6).toUpperCase();
             
