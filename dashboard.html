@@ -14,504 +14,399 @@
             --neon-green: #00ff88;
             --neon-red: #ff0044;
             --neon-purple: #7b2fff;
-            --dark-bg: #050510;
+            --dark-bg: #0a0a1a;
             --glass: rgba(255,255,255,0.03);
-            --glass-border: rgba(255,255,255,0.06);
+            --glass-border: rgba(255,255,255,0.08);
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
             background: var(--dark-bg);
             color: #fff;
             font-family: 'JetBrains Mono', monospace;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
         }
 
-        /* ─── خلفية متحركة ─── */
+        /* ─── الخلفية المتحركة ─── */
         body::before {
             content: '';
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: 
-                radial-gradient(circle at 20% 50%, rgba(0,240,255,0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(123,47,255,0.05) 0%, transparent 50%);
+                radial-gradient(circle at 30% 50%, rgba(0,240,255,0.03) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(123,47,255,0.03) 0%, transparent 50%);
             z-index: 0;
-            animation: pulseBg 4s ease-in-out infinite;
-        }
-
-        @keyframes pulseBg {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        /* ─── Grid lines ─── */
-        .grid-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 1;
             pointer-events: none;
         }
 
-        /* ─── Header ─── */
-        .header {
+        /* ─── الهيكل الرئيسي ─── */
+        .app-container {
             position: relative;
-            z-index: 10;
-            background: linear-gradient(180deg, rgba(5,5,16,0.95), rgba(5,5,16,0.8));
-            padding: 15px 30px;
+            z-index: 1;
+            width: 100vw;
+            height: 100vh;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            background: var(--dark-bg);
+        }
+
+        /* ─── شريط العنوان العلوي ─── */
+        .top-bar {
+            display: flex;
             align-items: center;
-            border-bottom: 1px solid rgba(0,240,255,0.2);
-            height: 65px;
-            backdrop-filter: blur(20px);
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.8);
+            border-bottom: 1px solid rgba(0,240,255,0.15);
+            height: 55px;
+            flex-shrink: 0;
+            z-index: 100;
         }
         
-        .header h1 {
+        .top-bar .logo {
             font-family: 'Orbitron', sans-serif;
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 900;
             background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(0,240,255,0.3);
-            letter-spacing: 3px;
-        }
-        .header h1 span { 
-            -webkit-text-fill-color: #fff;
-            background: none;
-            color: #fff;
-        }
-        
-        .header .status-area {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 15px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            font-size: 12px;
-            color: #888;
-        }
-        .status-badge .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            animation: blink 1.5s infinite;
-        }
-        .status-badge .dot.online { background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
-        .status-badge .dot.offline { background: var(--neon-red); }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* ─── Container ─── */
-        .container {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            height: calc(100vh - 65px);
-        }
-
-        /* ─── Sidebar ─── */
-        .sidebar {
-            width: 280px;
-            background: rgba(255,255,255,0.02);
-            border-right: 1px solid var(--glass-border);
-            padding: 20px;
-            overflow-y: auto;
-            backdrop-filter: blur(10px);
-        }
-        .sidebar::-webkit-scrollbar { width: 3px; }
-        .sidebar::-webkit-scrollbar-track { background: transparent; }
-        .sidebar::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 10px; }
-
-        .sidebar-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 13px;
-            color: var(--neon-blue);
             letter-spacing: 2px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(0,240,255,0.2);
+        }
+        
+        .top-bar .status-group {
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-        .sidebar-title .count {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: #888;
-            margin-left: auto;
-        }
-
-        .device-item {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            padding: 14px 16px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .device-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 3px;
-            height: 100%;
-            background: var(--neon-red);
-            transition: all 0.3s;
-        }
-        .device-item.active::before { background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
-        .device-item:hover { background: rgba(255,255,255,0.06); transform: translateX(3px); }
-        .device-item.active {
-            border-color: rgba(0,255,136,0.3);
-            background: rgba(0,255,136,0.05);
-        }
-        .device-item .dev-name { font-size: 14px; font-weight: 600; }
-        .device-item .dev-id { font-size: 11px; color: #666; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
-        .device-item .dev-status {
-            font-size: 10px;
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .device-item .dev-status .live {
-            color: var(--neon-green);
-            animation: blink 1s infinite;
-        }
-        .device-item .dev-status .off { color: #666; }
-
-        /* ─── Main Content ─── */
-        .main-content {
-            flex: 1;
-            display: flex;
             gap: 15px;
-            padding: 15px;
-            overflow: hidden;
         }
-
-        /* ─── Screen ─── */
-        .screen-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .screen-wrapper {
-            flex: 1;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(0,240,255,0.1);
-            box-shadow: 0 0 40px rgba(0,240,255,0.05);
-        }
-        .screen-wrapper canvas {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            image-rendering: auto;
-        }
-        .screen-wrapper:fullscreen canvas {
-            width: 100vw;
-            height: 100vh;
-            max-width: 100vw;
-            max-height: 100vh;
-        }
-
-        .scan-line {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0,240,255,0.015) 2px,
-                rgba(0,240,255,0.015) 4px
-            );
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .corner-decoration {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border-color: var(--neon-blue);
-            border-style: solid;
-            z-index: 3;
-            opacity: 0.5;
-        }
-        .corner-tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
-        .corner-tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
-        .corner-bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
-        .corner-br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
-
-        .screen-wrapper .placeholder {
-            text-align: center;
-            color: #333;
-        }
-        .screen-wrapper .placeholder .icon { font-size: 80px; margin-bottom: 15px; opacity: 0.5; }
-
-        /* ─── Controls Panel ─── */
-        .controls-panel {
-            width: 250px;
-            min-width: 250px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background: var(--glass);
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(10px);
-        }
-
-        .panel-section { 
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 12px;
-        }
-
-        .panel-label {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 10px;
-            color: var(--neon-blue);
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid transparent;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            letter-spacing: 1px;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, rgba(0,240,255,0.2), rgba(123,47,255,0.2));
-            border-color: rgba(0,240,255,0.3);
-            color: var(--neon-blue);
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, rgba(0,240,255,0.3), rgba(123,47,255,0.3));
-            box-shadow: 0 0 30px rgba(0,240,255,0.2);
-            transform: translateY(-2px);
-        }
-        .btn-danger {
-            background: linear-gradient(135deg, rgba(255,0,68,0.2), rgba(200,0,0,0.2));
-            border-color: rgba(255,0,68,0.3);
-            color: var(--neon-red);
-        }
-        .btn-danger:hover {
-            background: linear-gradient(135deg, rgba(255,0,68,0.3), rgba(200,0,0,0.3));
-            box-shadow: 0 0 30px rgba(255,0,68,0.2);
-        }
-        .btn-secondary {
-            background: rgba(255,255,255,0.03);
-            border-color: rgba(255,255,255,0.1);
-            color: #888;
-        }
-        .btn-secondary:hover { background: rgba(255,255,255,0.08); color: #fff; }
-
-        /* ─── Stats ─── */
-        .stat-grid {
-            display: grid;
-            gap: 8px;
-        }
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.03);
-        }
-        .stat-item .label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-item .value { 
-            font-size: 14px; 
-            font-weight: 700; 
-            color: var(--neon-blue);
-            font-family: 'Orbitron', sans-serif;
-            text-shadow: 0 0 20px rgba(0,240,255,0.3);
-        }
-        .stat-item .value.high { color: var(--neon-green); }
-        .stat-item .value.low { color: var(--neon-red); }
-
-        /* ─── Fullscreen Indicator ─── */
-        .rec-indicator {
-            position: absolute;
-            top: 15px;
-            right: 15px;
+        
+        .status-pill {
             display: flex;
             align-items: center;
             gap: 6px;
             padding: 4px 12px;
-            background: rgba(255,0,68,0.15);
-            border: 1px solid rgba(255,0,68,0.3);
+            background: rgba(255,255,255,0.05);
             border-radius: 20px;
-            z-index: 5;
+            border: 1px solid rgba(255,255,255,0.1);
             font-size: 11px;
-            color: var(--neon-red);
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 2px;
-            display: none;
+            color: #888;
+            font-family: 'JetBrains Mono', monospace;
         }
-        .rec-indicator .rec-dot {
+        
+        .status-pill .dot {
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: var(--neon-red);
-            animation: blink 1s infinite;
+            display: inline-block;
+        }
+        .status-pill .dot.online { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
+        .status-pill .dot.offline { background: var(--neon-red); }
+
+        /* ─── المحتوى الرئيسي ─── */
+        .main-area {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ─── الشريط الجانبي للأجهزة ─── */
+        .devices-sidebar {
+            width: 220px;
+            background: rgba(0,0,0,0.6);
+            border-right: 1px solid var(--glass-border);
+            padding: 15px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            backdrop-filter: blur(10px);
+        }
+        .devices-sidebar::-webkit-scrollbar { width: 2px; }
+        .devices-sidebar::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 10px; }
+        
+        .sidebar-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            color: var(--neon-blue);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0,240,255,0.2);
+            display: flex;
+            justify-content: space-between;
+        }
+        .sidebar-title .count { color: #666; font-family: 'JetBrains Mono', monospace; }
+
+        .device-item {
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .device-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); }
+        .device-item.active { 
+            border-color: var(--neon-green); 
+            background: rgba(0,255,136,0.06);
+            box-shadow: 0 0 15px rgba(0,255,136,0.05);
+        }
+        .device-item .name { font-size: 13px; font-weight: 600; }
+        .device-item .meta { font-size: 10px; color: #666; margin-top: 3px; }
+        .device-item .status-dot {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+
+        /* ─── منطقة الشاشة ─── */
+        .screen-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+
+        /* ─── حاوية الشاشة (تملأ كل المساحة المتاحة) ─── */
+        .screen-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: #000;
+            min-height: 0; /* مهم لـ flex */
+        }
+
+        /* ─── صورة الشاشة الحية ─── */
+        .screen-container canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: contain;
+            image-rendering: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* ─── عنصر الانتظار ─── */
+        .placeholder {
+            text-align: center;
+            color: #333;
+            z-index: 2;
+        }
+        .placeholder .icon { font-size: 60px; margin-bottom: 10px; opacity: 0.5; }
+        .placeholder h3 { font-size: 16px; color: #555; font-weight: 400; }
+
+        /* ─── شريط التحكم السفلي (يظهر دائماً) ─── */
+        .control-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.85);
+            border-top: 1px solid var(--glass-border);
+            height: 55px;
+            flex-shrink: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .control-bar .btn {
+            padding: 8px 18px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            background: rgba(255,255,255,0.05);
+            color: #aaa;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .control-bar .btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .control-bar .btn.active { 
+            border-color: var(--neon-red); 
+            color: var(--neon-red); 
+            background: rgba(255,0,68,0.1);
+        }
+        .control-bar .btn.primary {
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+            background: rgba(0,240,255,0.08);
+        }
+        .control-bar .btn.primary:hover {
+            background: rgba(0,240,255,0.15);
+            box-shadow: 0 0 20px rgba(0,240,255,0.1);
+        }
+        .control-bar .btn.danger {
+            border-color: var(--neon-red);
+            color: var(--neon-red);
+            background: rgba(255,0,68,0.08);
+        }
+        .control-bar .btn.danger:hover {
+            background: rgba(255,0,68,0.15);
+        }
+        .control-bar .btn .icon { font-size: 14px; }
+
+        .control-bar .spacer { flex: 1; }
+        
+        .control-bar .stats {
+            display: flex;
+            gap: 15px;
+            font-size: 11px;
+            color: #666;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .control-bar .stats span { display: flex; align-items: center; gap: 4px; }
+        .control-bar .stats .value { color: var(--neon-blue); font-weight: 700; }
+
+        /* ─── وضع ملء الشاشة ─── */
+        .screen-container:fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            padding: 0;
+            background: #000;
+        }
+        .screen-container:fullscreen canvas {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw;
+            max-height: 100vh;
+        }
+
+        /* ─── إخفاء الشريط الجانبي في الشاشات الصغيرة ─── */
+        @media (max-width: 768px) {
+            .devices-sidebar { 
+                position: absolute;
+                left: -220px;
+                top: 0;
+                bottom: 0;
+                z-index: 50;
+                transition: left 0.3s;
+                background: rgba(0,0,0,0.95);
+            }
+            .devices-sidebar.open { left: 0; }
+            .devices-sidebar .toggle-btn {
+                display: flex !important;
+                position: absolute;
+                right: -35px;
+                top: 10px;
+                width: 30px;
+                height: 30px;
+                background: var(--neon-blue);
+                color: #000;
+                border: none;
+                border-radius: 0 5px 5px 0;
+                cursor: pointer;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+            }
+            .control-bar .stats { display: none; }
         }
 
         /* ─── Toast ─── */
         .toast {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            padding: 12px 25px;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 25px;
             background: rgba(0,240,255,0.1);
             border: 1px solid rgba(0,240,255,0.3);
             border-radius: 8px;
-            backdrop-filter: blur(20px);
-            font-size: 13px;
+            font-size: 12px;
             color: var(--neon-blue);
             display: none;
             z-index: 9999;
             font-family: 'JetBrains Mono', monospace;
-            animation: slideUp 0.3s ease;
+            backdrop-filter: blur(20px);
+            animation: fadeIn 0.3s ease;
         }
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* ─── Responsive ─── */
-        @media (max-width: 900px) {
-            .sidebar { width: 80px; }
-            .sidebar .dev-id, .sidebar .dev-status { display: none; }
-            .controls-panel { width: 200px; min-width: 200px; }
-        }
-        @media (max-width: 600px) {
-            .main-content { flex-direction: column; }
-            .controls-panel { width: 100%; min-width: 100%; }
-            .sidebar { width: 100%; height: 100px; border-right: none; border-bottom: 1px solid var(--glass-border); }
-            .sidebar-title .count { display: none; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
     </style>
 </head>
 <body>
-    <div class="grid-overlay"></div>
-
-    <div class="header">
-        <h1>⟨ NEXUS ⟩<span> // COMMAND</span></h1>
-        <div class="status-area">
-            <div class="status-badge">
-                <span class="dot offline" id="connectionDot"></span>
-                <span id="connectionText">DISCONNECTED</span>
-            </div>
-            <div class="status-badge">
-                📡 <span id="fpsDisplay">0</span> FPS
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="sidebar">
-            <div class="sidebar-title">
-                ⚡ TARGETS
-                <span class="count" id="deviceCount">0</span>
-            </div>
-            <div id="deviceList">
-                <div class="device-item" onclick="selectDevice(this)" data-id="all">
-                    <div class="dev-name">🌐 ALL DEVICES</div>
-                    <div class="dev-id">SYSTEM::BROADCAST</div>
-                    <div class="dev-status"><span class="live">●</span> LIVE FEED</div>
+    <div class="app-container">
+        <!-- ─── الشريط العلوي ─── -->
+        <div class="top-bar">
+            <div class="logo">⟨ NEXUS ⟩</div>
+            <div class="status-group">
+                <div class="status-pill">
+                    <span class="dot offline" id="statusDot"></span>
+                    <span id="statusText">DISCONNECTED</span>
+                </div>
+                <div class="status-pill">
+                    📡 <span id="fpsDisplay">0</span> FPS
                 </div>
             </div>
         </div>
 
-        <div class="main-content">
-            <div class="screen-container">
-                <div class="screen-wrapper" id="screenWrapper">
-                    <div class="scan-line"></div>
-                    <div class="corner-decoration corner-tl"></div>
-                    <div class="corner-decoration corner-tr"></div>
-                    <div class="corner-decoration corner-bl"></div>
-                    <div class="corner-decoration corner-br"></div>
-                    <div class="rec-indicator" id="recIndicator">
-                        <span class="rec-dot"></span>
-                        REC
+        <!-- ─── المحتوى الرئيسي ─── -->
+        <div class="main-area">
+            <!-- ─── الشريط الجانبي للأجهزة ─── -->
+            <div class="devices-sidebar" id="devicesSidebar">
+                <button class="toggle-btn" onclick="toggleSidebar()" style="display:none;">☰</button>
+                <div class="sidebar-title">
+                    TARGETS
+                    <span class="count" id="deviceCount">0</span>
+                </div>
+                <div id="deviceList">
+                    <div class="device-item active" onclick="selectDevice(this)" data-id="all">
+                        <div class="name">🌐 ALL DEVICES</div>
+                        <div class="meta"><span class="status-dot" style="background:var(--neon-blue)"></span> BROADCAST</div>
                     </div>
-                    
+                </div>
+            </div>
+
+            <!-- ─── منطقة الشاشة ─── -->
+            <div class="screen-area">
+                <div class="screen-container" id="screenContainer">
                     <div class="placeholder" id="placeholder">
                         <div class="icon">📡</div>
-                        <h2>NO SIGNAL</h2>
-                        <p style="font-size:12px; color:#555;">select target to initialize feed</p>
+                        <h3>SELECT TARGET TO INITIALIZE</h3>
                     </div>
-                    <canvas id="screenCanvas" style="display:none;"></canvas>
-                </div>
-            </div>
-
-            <div class="controls-panel">
-                <div class="panel-section">
-                    <div class="panel-label">⏯ Controls</div>
-                    <button class="btn btn-primary" onclick="toggleStream()" id="streamBtn">▶ INITIALIZE</button>
-                    <button class="btn btn-secondary" style="margin-top:8px;" onclick="clearScreen()">🗑 CLEAR</button>
-                    <button class="btn btn-secondary" style="margin-top:8px;" onclick="toggleFullscreen()">⛶ FULLSCREEN</button>
+                    <canvas id="screenCanvas"></canvas>
                 </div>
 
-                <div class="panel-section" style="border-bottom:none;">
-                    <div class="panel-label">📊 Telemetry</div>
-                    <div class="stat-grid">
-                        <div class="stat-item">
-                            <span class="label">FPS</span>
-                            <span class="value" id="fpsValue">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="label">LATENCY</span>
-                            <span class="value" id="latencyValue">0ms</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="label">FRAMES</span>
-                            <span class="value" id="framesValue">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="label">QUALITY</span>
-                            <span class="value high" id="qualityValue">HD</span>
-                        </div>
+                <!-- ─── شريط التحكم السفلي ─── -->
+                <div class="control-bar">
+                    <button class="btn primary" onclick="toggleStream()" id="streamBtn">
+                        <span class="icon">▶</span>
+                        <span>START</span>
+                    </button>
+                    <button class="btn" onclick="clearScreen()">
+                        <span class="icon">✕</span>
+                        <span>CLEAR</span>
+                    </button>
+                    <button class="btn" onclick="toggleFullscreen()">
+                        <span class="icon">⛶</span>
+                        <span>FULL</span>
+                    </button>
+                    
+                    <div class="spacer"></div>
+                    
+                    <div class="stats">
+                        <span>FPS: <span class="value" id="fpsValue">0</span></span>
+                        <span>LAT: <span class="value" id="latencyValue">0ms</span></span>
+                        <span>FRAMES: <span class="value" id="framesValue">0</span></span>
                     </div>
                 </div>
             </div>
@@ -521,21 +416,25 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // ─── Configuration ───
+        // ─── التهيئة ───
         const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const WS_URL = `${protocol}//${location.host}/stream`;
+        const WS_URL = `${protocol}//${location.host}`;
         
-        // ─── State ───
         let ws = null;
         let selectedDevice = 'all';
-        let streamActive = false;
+        let streamActive = true; // يبدأ تلقائياً
         let frameCount = 0;
         let lastFrameTime = Date.now();
         let fpsValues = [];
         let devices = {};
+        let sidebarOpen = false;
         
         const canvas = document.getElementById('screenCanvas');
         const ctx = canvas.getContext('2d');
+        
+        // ─── بدء التشغيل ───
+        connect();
+        updateStreamBtn();
         
         // ─── WebSocket ───
         function connect() {
@@ -569,19 +468,15 @@
                     data.devices.forEach(d => { devices[d.id] = { id: d.id, online: true }; });
                     renderDevices();
                     break;
-                    
                 case 'device_online':
                     devices[data.deviceId] = { id: data.deviceId, online: true };
                     renderDevices();
-                    showToast(`📱 TARGET LOCKED: ${data.deviceId.substring(0,4)}`);
+                    showToast(`📱 TARGET: ${data.deviceId.substring(0,4)}`);
                     break;
-                    
                 case 'device_offline':
                     if (devices[data.deviceId]) devices[data.deviceId].online = false;
                     renderDevices();
-                    showToast(`💀 TARGET LOST: ${data.deviceId.substring(0,4)}`);
                     break;
-                    
                 case 'frame':
                     if ((selectedDevice === 'all' || selectedDevice === data.deviceId) && streamActive) {
                         renderFrame(data.image);
@@ -594,14 +489,23 @@
         function renderFrame(base64Image) {
             const img = new Image();
             img.onload = () => {
+                // نرسم الصورة لتملأ الكانفاس بالكامل
                 canvas.width = img.width;
                 canvas.height = img.height;
+                
+                // ضبط الكانفاس ليملأ الحاوية
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                canvas.style.position = 'absolute';
+                canvas.style.top = '50%';
+                canvas.style.left = '50%';
+                canvas.style.transform = 'translate(-50%, -50%)';
+                canvas.style.objectFit = 'contain';
+                
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                canvas.style.display = 'block';
                 document.getElementById('placeholder').style.display = 'none';
                 frameCount++;
                 document.getElementById('framesValue').textContent = frameCount;
-                document.getElementById('recIndicator').style.display = 'flex';
             };
             img.src = 'data:image/jpeg;base64,' + base64Image;
         }
@@ -619,12 +523,6 @@
             document.getElementById('fpsValue').textContent = avgFps;
             document.getElementById('fpsDisplay').textContent = avgFps;
             document.getElementById('latencyValue').textContent = elapsed + 'ms';
-            
-            // تحديث جودة الاتصال
-            const quality = document.getElementById('qualityValue');
-            if (avgFps >= 8) { quality.textContent = 'HD'; quality.className = 'value high'; }
-            else if (avgFps >= 4) { quality.textContent = 'SD'; quality.className = 'value'; }
-            else { quality.textContent = 'LOW'; quality.className = 'value low'; }
         }
 
         function renderDevices() {
@@ -632,19 +530,16 @@
             const ids = Object.keys(devices);
             
             let html = `<div class="device-item ${selectedDevice === 'all' ? 'active' : ''}" onclick="selectDevice(this)" data-id="all">
-                <div class="dev-name">🌐 ALL DEVICES</div>
-                <div class="dev-id">SYSTEM::BROADCAST</div>
-                <div class="dev-status"><span class="${streamActive ? 'live' : 'off'}">●</span> ${streamActive ? 'LIVE FEED' : 'STANDBY'}</div>
+                <div class="name">🌐 ALL DEVICES</div>
+                <div class="meta"><span class="status-dot" style="background:var(--neon-blue)"></span> BROADCAST</div>
             </div>`;
             
             ids.forEach(id => {
                 const d = devices[id];
-                const isActive = selectedDevice === id;
-                html += `<div class="device-item ${isActive ? 'active' : ''}" onclick="selectDevice(this)" data-id="${id}">
-                    <div class="dev-name">📱 TARGET_${id.substring(0,4).toUpperCase()}</div>
-                    <div class="dev-id">${id}</div>
-                    <div class="dev-status">
-                        <span class="${d.online ? 'live' : 'off'}">●</span> 
+                html += `<div class="device-item ${selectedDevice === id ? 'active' : ''}" onclick="selectDevice(this)" data-id="${id}">
+                    <div class="name">📱 ${id.substring(0,4).toUpperCase()}</div>
+                    <div class="meta">
+                        <span class="status-dot" style="background:${d.online ? 'var(--neon-green)' : 'var(--neon-red)'}"></span>
                         ${d.online ? 'ACTIVE' : 'OFFLINE'}
                     </div>
                 </div>`;
@@ -658,41 +553,76 @@
             document.querySelectorAll('.device-item').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
             selectedDevice = element.dataset.id;
-            if (streamActive) clearScreen();
-            showToast(`🎯 TARGET: ${selectedDevice === 'all' ? 'ALL DEVICES' : selectedDevice.substring(0,4)}`);
+            
+            // إغلاق الشريط في الجوال
+            if (window.innerWidth <= 768) {
+                document.getElementById('devicesSidebar').classList.remove('open');
+            }
         }
 
         function toggleStream() {
             streamActive = !streamActive;
-            const btn = document.getElementById('streamBtn');
-            btn.textContent = streamActive ? '⏹ TERMINATE' : '▶ INITIALIZE';
-            btn.className = streamActive ? 'btn btn-danger' : 'btn btn-primary';
-            
+            updateStreamBtn();
             if (!streamActive) {
-                document.getElementById('recIndicator').style.display = 'none';
+                document.getElementById('streamBtn').querySelector('.icon').textContent = '▶';
+            } else {
+                document.getElementById('streamBtn').querySelector('.icon').textContent = '⏹';
+            }
+        }
+
+        function updateStreamBtn() {
+            const btn = document.getElementById('streamBtn');
+            const icon = btn.querySelector('.icon');
+            const text = btn.querySelector('span:last-child');
+            
+            if (streamActive) {
+                icon.textContent = '⏹';
+                text.textContent = 'LIVE';
+                btn.className = 'btn danger';
+            } else {
+                icon.textContent = '▶';
+                text.textContent = 'START';
+                btn.className = 'btn primary';
             }
         }
 
         function clearScreen() {
-            canvas.style.display = 'none';
-            document.getElementById('placeholder').style.display = 'flex';
+            canvas.style.width = '0';
+            canvas.style.height = '0';
+            document.getElementById('placeholder').style.display = 'block';
             frameCount = 0;
             document.getElementById('framesValue').textContent = '0';
-            document.getElementById('recIndicator').style.display = 'none';
         }
 
         function toggleFullscreen() {
-            const wrapper = document.getElementById('screenWrapper');
+            const container = document.getElementById('screenContainer');
             if (!document.fullscreenElement) {
-                wrapper.requestFullscreen().catch(err => {});
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                } else if (container.msRequestFullscreen) {
+                    container.msRequestFullscreen();
+                }
             } else {
-                document.exitFullscreen();
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
             }
         }
 
+        function toggleSidebar() {
+            sidebarOpen = !sidebarOpen;
+            document.getElementById('devicesSidebar').classList.toggle('open', sidebarOpen);
+        }
+
         function updateConnection(online) {
-            const dot = document.getElementById('connectionDot');
-            const text = document.getElementById('connectionText');
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
             dot.className = `dot ${online ? 'online' : 'offline'}`;
             text.textContent = online ? 'CONNECTED' : 'DISCONNECTED';
         }
@@ -701,11 +631,28 @@
             const toast = document.getElementById('toast');
             toast.textContent = msg;
             toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
 
-        // ─── Start ───
-        connect();
+        // ─── عند تغيير حجم الشاشة ───
+        window.addEventListener('resize', () => {
+            // الكانفاس يتأقلم تلقائياً مع CSS
+        });
+
+        // ─── الفل شاشة ───
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+        function handleFullscreenChange() {
+            if (document.fullscreenElement) {
+                document.getElementById('screenContainer').classList.add('fullscreen');
+            } else {
+                document.getElementById('screenContainer').classList.remove('fullscreen');
+            }
+        }
     </script>
 </body>
     </html>
