@@ -38,7 +38,7 @@
             background: #000;
         }
 
-        /* الشريط الجانبي الأيمن */
+        /* ─── الشريط الجانبي الأيمن ─── */
         .sidebar-right {
             width: 180px;
             background: rgba(8,8,24,0.95);
@@ -66,12 +66,7 @@
             -webkit-text-fill-color: transparent;
             letter-spacing: 3px;
         }
-        .sidebar-header .sub {
-            font-size: 9px;
-            color: #444;
-            margin-top: 2px;
-            letter-spacing: 2px;
-        }
+        .sidebar-header .sub { font-size: 9px; color: #444; margin-top: 2px; letter-spacing: 2px; }
 
         .device-name-box {
             padding: 10px 12px;
@@ -118,25 +113,23 @@
         .sidebar-stats .stat .val { display: block; font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--neon-blue); }
         .sidebar-stats .stat .lbl { font-size: 7px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* منطقة الشاشة الحية */
+        /* ─── منطقة الشاشة الحية (تثبيت الحاوية بالكامل لمنع الانضغاط) ─── */
         .screen-area {
             flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: 100%;
             position: relative;
             background: #000;
             overflow: hidden;
-            min-width: 0;
         }
 
-        /* التعديل الجذري للكانفاس لضمان عدم حدوث تداخل بكسلي */
+        /* ─── الإصلاح القاتل للكانفاس: ملء قسري مع الحفاظ على الأبعاد العادية ─── */
         #screenCanvas {
-            display: block;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important; /* هذا السطر يلغي الحواف السوداء ويمنع تمطيط الصورة للشكل الشريطي النحيف */
             image-rendering: -webkit-optimize-contrast;
             image-rendering: pixelated;
         }
@@ -310,34 +303,12 @@
         function renderFrame(base64Image) {
             const img = new Image();
             img.onload = () => {
-                const container = document.getElementById('screenArea');
-                const containerWidth = container.clientWidth;
-                const containerHeight = container.clientHeight;
-
-                // الحفاظ على دقة الجودة الداخلية للكانفاس بناءً على الصورة المستقبلة
+                // ضبط دقة الرسم الداخلي لمطابقة حجم الصورة الأصلية القادمة بدقة مذهلة
                 canvas.width = img.width;
                 canvas.height = img.height;
-
-                // حساب النسبة الرياضية للهاتف لملء الشاشة ديناميكياً بدون انضغاط بكسلي
-                const imgRatio = img.width / img.height;
-                const containerRatio = containerWidth / containerHeight;
-
-                let targetWidth, targetHeight;
-
-                // تمديد إجباري ذكي بناءً على الأبعاد لمنع تشوه المرايا اللانهائية
-                if (imgRatio > containerRatio) {
-                    targetWidth = containerWidth;
-                    targetHeight = containerWidth / imgRatio;
-                } else {
-                    targetHeight = containerHeight;
-                    targetWidth = containerHeight * imgRatio;
-                }
-
-                // تطبيق التكبير الدقيق لتغطية المساحة بالكامل
-                canvas.style.width = containerWidth + 'px';
-                canvas.style.height = containerHeight + 'px';
                 
-                ctx.imageSmoothingEnabled = false; // إلغاء التنعيم لمنع غبش النفق المكسر واظهار جودة حادة
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
                 document.getElementById('placeholder').style.display = 'none';
@@ -400,7 +371,6 @@
 
         function clearScreen() {
             canvas.width = 0; canvas.height = 0;
-            canvas.style.width = '0'; canvas.style.height = '0';
             document.getElementById('placeholder').style.display = 'block';
             frameCount = 0;
         }
