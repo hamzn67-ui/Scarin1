@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NEXUS - Command Center</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;700&display=swap');
@@ -14,9 +14,11 @@
             --neon-green: #00ff88;
             --neon-red: #ff0044;
             --neon-purple: #7b2fff;
-            --dark-bg: #0a0a1a;
+            --neon-orange: #ff6600;
+            --dark-bg: #05050f;
             --glass: rgba(255,255,255,0.03);
             --glass-border: rgba(255,255,255,0.08);
+            --panel-bg: rgba(10,10,30,0.92);
         }
 
         html, body {
@@ -28,387 +30,392 @@
             background: var(--dark-bg);
             color: #fff;
             font-family: 'JetBrains Mono', monospace;
+            user-select: none;
         }
 
-        /* ─── الخلفية المتحركة ─── */
         body::before {
             content: '';
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: 
-                radial-gradient(circle at 30% 50%, rgba(0,240,255,0.03) 0%, transparent 50%),
-                radial-gradient(circle at 70% 50%, rgba(123,47,255,0.03) 0%, transparent 50%);
+                radial-gradient(circle at 20% 50%, rgba(0,240,255,0.04) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(123,47,255,0.04) 0%, transparent 50%);
             z-index: 0;
             pointer-events: none;
         }
 
-        /* ─── الهيكل الرئيسي ─── */
-        .app-container {
-            position: relative;
-            z-index: 1;
-            width: 100vw;
-            height: 100vh;
+        /* ─── الحاوية الرئيسية ─── */
+        .app {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            z-index: 1;
             background: var(--dark-bg);
         }
 
-        /* ─── شريط العنوان العلوي ─── */
-        .top-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 20px;
-            background: rgba(0,0,0,0.8);
-            border-bottom: 1px solid rgba(0,240,255,0.15);
-            height: 55px;
-            flex-shrink: 0;
-            z-index: 100;
-        }
-        
-        .top-bar .logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            font-weight: 900;
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
-        }
-        
-        .top-bar .status-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .status-pill {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            font-size: 11px;
-            color: #888;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        
-        .status-pill .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .status-pill .dot.online { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
-        .status-pill .dot.offline { background: var(--neon-red); }
-
-        /* ─── المحتوى الرئيسي ─── */
-        .main-area {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* ─── الشريط الجانبي للأجهزة ─── */
-        .devices-sidebar {
-            width: 220px;
-            background: rgba(0,0,0,0.6);
+        /* ─── الشريط الجانبي الأيسر (أجهزة) ─── */
+        .sidebar-left {
+            width: 65px;
+            background: var(--panel-bg);
             border-right: 1px solid var(--glass-border);
-            padding: 15px;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0;
+            z-index: 10;
             flex-shrink: 0;
-            backdrop-filter: blur(10px);
+            overflow: hidden;
+            transition: width 0.25s;
         }
-        .devices-sidebar::-webkit-scrollbar { width: 2px; }
-        .devices-sidebar::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 10px; }
-        
-        .sidebar-title {
+        .sidebar-left:hover {
+            width: 200px;
+        }
+        .sidebar-left .logo {
             font-family: 'Orbitron', sans-serif;
             font-size: 11px;
             color: var(--neon-blue);
             letter-spacing: 2px;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(0,240,255,0.2);
-            display: flex;
-            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,240,255,0.15);
+            width: 100%;
+            text-align: center;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
-        .sidebar-title .count { color: #666; font-family: 'JetBrains Mono', monospace; }
-
-        .device-item {
-            padding: 10px 12px;
-            margin-bottom: 6px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid transparent;
-            border-radius: 8px;
+        .sidebar-left .logo span { display: inline-block; }
+        .sidebar-left:hover .logo span::before { content: '⟨ '; }
+        .sidebar-left:hover .logo span::after { content: ' ⟩'; }
+        
+        .sidebar-left .device-scroll {
+            flex: 1;
+            overflow-y: auto;
+            width: 100%;
+            padding: 5px 0;
+        }
+        .sidebar-left .device-scroll::-webkit-scrollbar { width: 0; }
+        
+        .device-btn {
+            width: 100%;
+            padding: 8px 5px;
+            background: transparent;
+            border: none;
+            border-left: 2px solid transparent;
+            color: #666;
             cursor: pointer;
             transition: all 0.2s;
-        }
-        .device-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); }
-        .device-item.active { 
-            border-color: var(--neon-green); 
-            background: rgba(0,255,136,0.06);
-            box-shadow: 0 0 15px rgba(0,255,136,0.05);
-        }
-        .device-item .name { font-size: 13px; font-weight: 600; }
-        .device-item .meta { font-size: 10px; color: #666; margin-top: 3px; }
-        .device-item .status-dot {
-            display: inline-block;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            margin-right: 4px;
-        }
-
-        /* ─── منطقة الشاشة ─── */
-        .screen-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
             position: relative;
-            background: #000;
+            white-space: nowrap;
             overflow: hidden;
         }
+        .device-btn .icon { font-size: 16px; display: block; margin-bottom: 2px; }
+        .device-btn .label { display: none; }
+        .sidebar-left:hover .device-btn .label { display: inline; }
+        .sidebar-left:hover .device-btn { padding: 6px 15px; text-align: left; }
+        .sidebar-left:hover .device-btn .icon { display: inline; margin-bottom: 0; margin-right: 6px; }
+        
+        .device-btn:hover { background: rgba(255,255,255,0.05); color: #aaa; }
+        .device-btn.active { 
+            border-left-color: var(--neon-green);
+            color: var(--neon-green);
+            background: rgba(0,255,136,0.05);
+        }
+        .device-btn .dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            display: inline-block;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+        .sidebar-left:hover .device-btn .dot {
+            position: relative;
+            top: auto;
+            right: auto;
+            margin-left: 4px;
+        }
+        .device-btn .dot.online { background: var(--neon-green); box-shadow: 0 0 6px var(--neon-green); }
+        .device-btn .dot.offline { background: var(--neon-red); }
 
-        /* ─── حاوية الشاشة (تملأ كل المساحة المتاحة) ─── */
-        .screen-container {
+        /* ─── منطقة الشاشة المركزية ─── */
+        .screen-area {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            overflow: hidden;
             background: #000;
-            min-height: 0; /* مهم لـ flex */
+            overflow: hidden;
+            min-width: 0;
         }
 
-        /* ─── صورة الشاشة الحية ─── */
-        .screen-container canvas {
+        /* ─── الكانفاس (يملأ المساحة بالكامل) ─── */
+        #screenCanvas {
             display: block;
-            width: 100% !important;
-            height: 100% !important;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
-            image-rendering: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* ─── شاشة الانتظار ─── */
+        .placeholder {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-        }
-
-        /* ─── عنصر الانتظار ─── */
-        .placeholder {
             text-align: center;
-            color: #333;
+            color: #222;
             z-index: 2;
+            pointer-events: none;
         }
-        .placeholder .icon { font-size: 60px; margin-bottom: 10px; opacity: 0.5; }
-        .placeholder h3 { font-size: 16px; color: #555; font-weight: 400; }
+        .placeholder .icon { font-size: 80px; opacity: 0.3; }
+        .placeholder h3 { font-size: 14px; color: #333; font-weight: 400; margin-top: 10px; }
+        .placeholder h3 .highlight { color: var(--neon-blue); opacity: 0.5; }
 
-        /* ─── شريط التحكم السفلي (يظهر دائماً) ─── */
-        .control-bar {
+        /* ─── طبقة التحكم العلوية (شفافة، تظهر عند التحريك) ─── */
+        .overlay-top {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 45px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 20px;
-            background: rgba(0,0,0,0.85);
-            border-top: 1px solid var(--glass-border);
-            height: 55px;
+            padding: 0 15px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .screen-area:hover .overlay-top { opacity: 1; pointer-events: auto; }
+        
+        .overlay-top .stat {
+            font-size: 10px;
+            color: rgba(255,255,255,0.5);
+            margin-right: 15px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .overlay-top .stat .val { color: var(--neon-blue); font-weight: 700; }
+        .overlay-top .spacer { flex: 1; }
+        .overlay-top .device-name {
+            font-size: 11px;
+            color: rgba(255,255,255,0.6);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* ─── الشريط الجانبي الأيمن (أزرار التحكم) ─── */
+        .sidebar-right {
+            width: 55px;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 0;
+            z-index: 10;
             flex-shrink: 0;
-            z-index: 100;
-            backdrop-filter: blur(10px);
         }
         
-        .control-bar .btn {
-            padding: 8px 18px;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 6px;
-            background: rgba(255,255,255,0.05);
-            color: #aaa;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            font-weight: 600;
+        .ctrl-btn {
+            width: 40px;
+            height: 40px;
+            margin: 3px 0;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            color: #666;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 6px;
-            white-space: nowrap;
+            justify-content: center;
+            font-size: 16px;
+            position: relative;
         }
-        .control-bar .btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .control-bar .btn.active { 
-            border-color: var(--neon-red); 
-            color: var(--neon-red); 
-            background: rgba(255,0,68,0.1);
+        .ctrl-btn:hover { 
+            background: rgba(255,255,255,0.08); 
+            color: #fff;
+            border-color: rgba(255,255,255,0.15);
         }
-        .control-bar .btn.primary {
-            border-color: var(--neon-blue);
-            color: var(--neon-blue);
-            background: rgba(0,240,255,0.08);
-        }
-        .control-bar .btn.primary:hover {
-            background: rgba(0,240,255,0.15);
-            box-shadow: 0 0 20px rgba(0,240,255,0.1);
-        }
-        .control-bar .btn.danger {
+        .ctrl-btn.active {
             border-color: var(--neon-red);
             color: var(--neon-red);
-            background: rgba(255,0,68,0.08);
+            background: rgba(255,0,68,0.1);
+            box-shadow: 0 0 15px rgba(255,0,68,0.05);
         }
-        .control-bar .btn.danger:hover {
+        .ctrl-btn.primary {
+            border-color: rgba(0,240,255,0.2);
+            color: var(--neon-blue);
+        }
+        .ctrl-btn.primary:hover {
+            background: rgba(0,240,255,0.1);
+            box-shadow: 0 0 20px rgba(0,240,255,0.05);
+        }
+        .ctrl-btn.danger {
+            border-color: rgba(255,0,68,0.15);
+        }
+        .ctrl-btn.danger.active {
+            border-color: var(--neon-red);
             background: rgba(255,0,68,0.15);
+            box-shadow: 0 0 15px rgba(255,0,68,0.1);
         }
-        .control-bar .btn .icon { font-size: 14px; }
-
-        .control-bar .spacer { flex: 1; }
         
-        .control-bar .stats {
-            display: flex;
-            gap: 15px;
-            font-size: 11px;
-            color: #666;
+        .ctrl-btn .tooltip {
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.9);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            border: 1px solid var(--glass-border);
+        }
+        .ctrl-btn:hover .tooltip { opacity: 1; }
+
+        .sidebar-right .spacer { flex: 1; }
+        
+        .sidebar-right .fps-indicator {
+            font-size: 9px;
+            color: #444;
+            text-align: center;
+            padding: 5px;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+        .sidebar-right .fps-indicator .num { 
+            color: var(--neon-blue); 
+            font-size: 14px;
+            display: block;
             font-family: 'JetBrains Mono', monospace;
         }
-        .control-bar .stats span { display: flex; align-items: center; gap: 4px; }
-        .control-bar .stats .value { color: var(--neon-blue); font-weight: 700; }
 
         /* ─── وضع ملء الشاشة ─── */
-        .screen-container:fullscreen {
+        .screen-area:-webkit-full-screen {
             width: 100vw !important;
             height: 100vh !important;
-            padding: 0;
-            background: #000;
         }
-        .screen-container:fullscreen canvas {
+        .screen-area:-moz-full-screen {
             width: 100vw !important;
             height: 100vh !important;
-            max-width: 100vw;
-            max-height: 100vh;
         }
-
-        /* ─── إخفاء الشريط الجانبي في الشاشات الصغيرة ─── */
-        @media (max-width: 768px) {
-            .devices-sidebar { 
-                position: absolute;
-                left: -220px;
-                top: 0;
-                bottom: 0;
-                z-index: 50;
-                transition: left 0.3s;
-                background: rgba(0,0,0,0.95);
-            }
-            .devices-sidebar.open { left: 0; }
-            .devices-sidebar .toggle-btn {
-                display: flex !important;
-                position: absolute;
-                right: -35px;
-                top: 10px;
-                width: 30px;
-                height: 30px;
-                background: var(--neon-blue);
-                color: #000;
-                border: none;
-                border-radius: 0 5px 5px 0;
-                cursor: pointer;
-                align-items: center;
-                justify-content: center;
-                font-size: 16px;
-            }
-            .control-bar .stats { display: none; }
+        .screen-area:fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+        .screen-area:-webkit-full-screen #screenCanvas {
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+        .screen-area:-moz-full-screen #screenCanvas {
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+        .screen-area:fullscreen #screenCanvas {
+            width: 100vw !important;
+            height: 100vh !important;
         }
 
         /* ─── Toast ─── */
         .toast {
             position: fixed;
-            bottom: 70px;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 10px 25px;
-            background: rgba(0,240,255,0.1);
-            border: 1px solid rgba(0,240,255,0.3);
-            border-radius: 8px;
-            font-size: 12px;
+            padding: 8px 20px;
+            background: rgba(0,240,255,0.08);
+            border: 1px solid rgba(0,240,255,0.2);
+            border-radius: 6px;
+            font-size: 11px;
             color: var(--neon-blue);
             display: none;
             z-index: 9999;
             font-family: 'JetBrains Mono', monospace;
             backdrop-filter: blur(20px);
-            animation: fadeIn 0.3s ease;
+            animation: fadeInUp 0.3s ease;
         }
-        @keyframes fadeIn {
+        @keyframes fadeInUp {
             from { opacity: 0; transform: translateX(-50%) translateY(10px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* ─── استجابة للشاشات الصغيرة ─── */
+        @media (max-width: 600px) {
+            .sidebar-left { width: 40px; }
+            .sidebar-left:hover { width: 150px; }
+            .sidebar-right { width: 40px; }
+            .ctrl-btn { width: 30px; height: 30px; font-size: 12px; }
+            .device-btn { font-size: 8px; }
+            .device-btn .icon { font-size: 12px; }
+            .overlay-top .stat { font-size: 8px; margin-right: 8px; }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- ─── الشريط العلوي ─── -->
-        <div class="top-bar">
-            <div class="logo">⟨ NEXUS ⟩</div>
-            <div class="status-group">
-                <div class="status-pill">
-                    <span class="dot offline" id="statusDot"></span>
-                    <span id="statusText">DISCONNECTED</span>
-                </div>
-                <div class="status-pill">
-                    📡 <span id="fpsDisplay">0</span> FPS
-                </div>
+    <div class="app">
+        <!-- ─── الشريط الجانبي الأيسر: الأجهزة ─── -->
+        <div class="sidebar-left" id="sidebarLeft">
+            <div class="logo"><span>NEXUS</span></div>
+            <div class="device-scroll" id="deviceList">
+                <button class="device-btn active" onclick="selectDevice('all')" data-id="all">
+                    <span class="icon">🌐</span>
+                    <span class="label">ALL</span>
+                    <span class="dot" style="background:var(--neon-blue)"></span>
+                </button>
             </div>
         </div>
 
-        <!-- ─── المحتوى الرئيسي ─── -->
-        <div class="main-area">
-            <!-- ─── الشريط الجانبي للأجهزة ─── -->
-            <div class="devices-sidebar" id="devicesSidebar">
-                <button class="toggle-btn" onclick="toggleSidebar()" style="display:none;">☰</button>
-                <div class="sidebar-title">
-                    TARGETS
-                    <span class="count" id="deviceCount">0</span>
-                </div>
-                <div id="deviceList">
-                    <div class="device-item active" onclick="selectDevice(this)" data-id="all">
-                        <div class="name">🌐 ALL DEVICES</div>
-                        <div class="meta"><span class="status-dot" style="background:var(--neon-blue)"></span> BROADCAST</div>
-                    </div>
-                </div>
+        <!-- ─── منطقة الشاشة المركزية ─── -->
+        <div class="screen-area" id="screenArea">
+            <div class="placeholder" id="placeholder">
+                <div class="icon">📡</div>
+                <h3>WAITING FOR <span class="highlight">SIGNAL</span></h3>
             </div>
+            <canvas id="screenCanvas"></canvas>
+            
+            <!-- طبقة المعلومات العلوية -->
+            <div class="overlay-top">
+                <span class="stat">FPS: <span class="val" id="fpsTop">0</span></span>
+                <span class="stat">LAT: <span class="val" id="latTop">0ms</span></span>
+                <span class="stat">FRAMES: <span class="val" id="framesTop">0</span></span>
+                <div class="spacer"></div>
+                <span class="device-name" id="deviceNameTop">ALL DEVICES</span>
+            </div>
+        </div>
 
-            <!-- ─── منطقة الشاشة ─── -->
-            <div class="screen-area">
-                <div class="screen-container" id="screenContainer">
-                    <div class="placeholder" id="placeholder">
-                        <div class="icon">📡</div>
-                        <h3>SELECT TARGET TO INITIALIZE</h3>
-                    </div>
-                    <canvas id="screenCanvas"></canvas>
-                </div>
-
-                <!-- ─── شريط التحكم السفلي ─── -->
-                <div class="control-bar">
-                    <button class="btn primary" onclick="toggleStream()" id="streamBtn">
-                        <span class="icon">▶</span>
-                        <span>START</span>
-                    </button>
-                    <button class="btn" onclick="clearScreen()">
-                        <span class="icon">✕</span>
-                        <span>CLEAR</span>
-                    </button>
-                    <button class="btn" onclick="toggleFullscreen()">
-                        <span class="icon">⛶</span>
-                        <span>FULL</span>
-                    </button>
-                    
-                    <div class="spacer"></div>
-                    
-                    <div class="stats">
-                        <span>FPS: <span class="value" id="fpsValue">0</span></span>
-                        <span>LAT: <span class="value" id="latencyValue">0ms</span></span>
-                        <span>FRAMES: <span class="value" id="framesValue">0</span></span>
-                    </div>
-                </div>
+        <!-- ─── الشريط الجانبي الأيمن: الأزرار ─── -->
+        <div class="sidebar-right">
+            <button class="ctrl-btn danger active" onclick="toggleStream()" id="streamBtn">
+                ⏹
+                <span class="tooltip">TOGGLE STREAM</span>
+            </button>
+            <button class="ctrl-btn" onclick="clearScreen()">
+                ✕
+                <span class="tooltip">CLEAR</span>
+            </button>
+            <button class="ctrl-btn primary" onclick="toggleFullscreen()">
+                ⛶
+                <span class="tooltip">FULLSCREEN</span>
+            </button>
+            <button class="ctrl-btn" onclick="captureStill()">
+                📷
+                <span class="tooltip">CAPTURE</span>
+            </button>
+            <div class="spacer"></div>
+            <div class="fps-indicator">
+                <span class="num" id="fpsSide">0</span>
+                FPS
             </div>
         </div>
     </div>
@@ -422,19 +429,18 @@
         
         let ws = null;
         let selectedDevice = 'all';
-        let streamActive = true; // يبدأ تلقائياً
+        let streamActive = true;
         let frameCount = 0;
         let lastFrameTime = Date.now();
         let fpsValues = [];
         let devices = {};
-        let sidebarOpen = false;
+        let isFullscreen = false;
         
         const canvas = document.getElementById('screenCanvas');
         const ctx = canvas.getContext('2d');
         
         // ─── بدء التشغيل ───
         connect();
-        updateStreamBtn();
         
         // ─── WebSocket ───
         function connect() {
@@ -471,7 +477,7 @@
                 case 'device_online':
                     devices[data.deviceId] = { id: data.deviceId, online: true };
                     renderDevices();
-                    showToast(`📱 TARGET: ${data.deviceId.substring(0,4)}`);
+                    showToast(`📱 TARGET: ${data.deviceId.substring(0,4).toUpperCase()}`);
                     break;
                 case 'device_offline':
                     if (devices[data.deviceId]) devices[data.deviceId].online = false;
@@ -489,23 +495,19 @@
         function renderFrame(base64Image) {
             const img = new Image();
             img.onload = () => {
-                // نرسم الصورة لتملأ الكانفاس بالكامل
+                // ضبط الكانفاس ليملأ المساحة
+                const container = document.getElementById('screenArea');
+                const rect = container.getBoundingClientRect();
+                
                 canvas.width = img.width;
                 canvas.height = img.height;
-                
-                // ضبط الكانفاس ليملأ الحاوية
                 canvas.style.width = '100%';
                 canvas.style.height = '100%';
-                canvas.style.position = 'absolute';
-                canvas.style.top = '50%';
-                canvas.style.left = '50%';
-                canvas.style.transform = 'translate(-50%, -50%)';
-                canvas.style.objectFit = 'contain';
                 
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 document.getElementById('placeholder').style.display = 'none';
                 frameCount++;
-                document.getElementById('framesValue').textContent = frameCount;
+                document.getElementById('framesTop').textContent = frameCount;
             };
             img.src = 'data:image/jpeg;base64,' + base64Image;
         }
@@ -520,69 +522,53 @@
             if (fpsValues.length > 15) fpsValues.shift();
             
             const avgFps = Math.round(fpsValues.reduce((a,b)=>a+b, 0) / fpsValues.length);
-            document.getElementById('fpsValue').textContent = avgFps;
-            document.getElementById('fpsDisplay').textContent = avgFps;
-            document.getElementById('latencyValue').textContent = elapsed + 'ms';
+            document.getElementById('fpsTop').textContent = avgFps;
+            document.getElementById('fpsSide').textContent = avgFps;
+            document.getElementById('latTop').textContent = elapsed + 'ms';
         }
 
         function renderDevices() {
             const list = document.getElementById('deviceList');
             const ids = Object.keys(devices);
             
-            let html = `<div class="device-item ${selectedDevice === 'all' ? 'active' : ''}" onclick="selectDevice(this)" data-id="all">
-                <div class="name">🌐 ALL DEVICES</div>
-                <div class="meta"><span class="status-dot" style="background:var(--neon-blue)"></span> BROADCAST</div>
-            </div>`;
+            let html = `<button class="device-btn ${selectedDevice === 'all' ? 'active' : ''}" onclick="selectDevice('all')" data-id="all">
+                <span class="icon">🌐</span>
+                <span class="label">ALL</span>
+                <span class="dot" style="background:var(--neon-blue)"></span>
+            </button>`;
             
             ids.forEach(id => {
                 const d = devices[id];
-                html += `<div class="device-item ${selectedDevice === id ? 'active' : ''}" onclick="selectDevice(this)" data-id="${id}">
-                    <div class="name">📱 ${id.substring(0,4).toUpperCase()}</div>
-                    <div class="meta">
-                        <span class="status-dot" style="background:${d.online ? 'var(--neon-green)' : 'var(--neon-red)'}"></span>
-                        ${d.online ? 'ACTIVE' : 'OFFLINE'}
-                    </div>
-                </div>`;
+                html += `<button class="device-btn ${selectedDevice === id ? 'active' : ''}" onclick="selectDevice('${id}')" data-id="${id}">
+                    <span class="icon">📱</span>
+                    <span class="label">${id.substring(0,4).toUpperCase()}</span>
+                    <span class="dot ${d.online ? 'online' : 'offline'}"></span>
+                </button>`;
             });
             
             list.innerHTML = html;
-            document.getElementById('deviceCount').textContent = ids.length;
         }
 
-        function selectDevice(element) {
-            document.querySelectorAll('.device-item').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
-            selectedDevice = element.dataset.id;
-            
-            // إغلاق الشريط في الجوال
-            if (window.innerWidth <= 768) {
-                document.getElementById('devicesSidebar').classList.remove('open');
-            }
+        function selectDevice(id) {
+            selectedDevice = id;
+            document.querySelectorAll('.device-btn').forEach(el => {
+                el.classList.toggle('active', el.dataset.id === id);
+            });
+            document.getElementById('deviceNameTop').textContent = id === 'all' ? 'ALL DEVICES' : id.substring(0,4).toUpperCase();
+            clearScreen();
         }
 
         function toggleStream() {
             streamActive = !streamActive;
-            updateStreamBtn();
-            if (!streamActive) {
-                document.getElementById('streamBtn').querySelector('.icon').textContent = '▶';
-            } else {
-                document.getElementById('streamBtn').querySelector('.icon').textContent = '⏹';
-            }
-        }
-
-        function updateStreamBtn() {
             const btn = document.getElementById('streamBtn');
-            const icon = btn.querySelector('.icon');
-            const text = btn.querySelector('span:last-child');
-            
             if (streamActive) {
-                icon.textContent = '⏹';
-                text.textContent = 'LIVE';
-                btn.className = 'btn danger';
+                btn.textContent = '⏹';
+                btn.className = 'ctrl-btn danger active';
+                showToast('▶ STREAM ACTIVE');
             } else {
-                icon.textContent = '▶';
-                text.textContent = 'START';
-                btn.className = 'btn primary';
+                btn.textContent = '▶';
+                btn.className = 'ctrl-btn primary';
+                showToast('⏹ STREAM PAUSED');
             }
         }
 
@@ -591,11 +577,11 @@
             canvas.style.height = '0';
             document.getElementById('placeholder').style.display = 'block';
             frameCount = 0;
-            document.getElementById('framesValue').textContent = '0';
+            document.getElementById('framesTop').textContent = '0';
         }
 
         function toggleFullscreen() {
-            const container = document.getElementById('screenContainer');
+            const container = document.getElementById('screenArea');
             if (!document.fullscreenElement) {
                 if (container.requestFullscreen) {
                     container.requestFullscreen();
@@ -604,6 +590,7 @@
                 } else if (container.msRequestFullscreen) {
                     container.msRequestFullscreen();
                 }
+                isFullscreen = true;
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
@@ -612,19 +599,31 @@
                 } else if (document.msExitFullscreen) {
                     document.msExitFullscreen();
                 }
+                isFullscreen = false;
             }
         }
 
-        function toggleSidebar() {
-            sidebarOpen = !sidebarOpen;
-            document.getElementById('devicesSidebar').classList.toggle('open', sidebarOpen);
+        function captureStill() {
+            if (!canvas.width || !canvas.height) {
+                showToast('⚠ NO FRAME AVAILABLE');
+                return;
+            }
+            const link = document.createElement('a');
+            link.download = `nexus_${Date.now()}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+            showToast('📸 FRAME CAPTURED');
         }
 
         function updateConnection(online) {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            dot.className = `dot ${online ? 'online' : 'offline'}`;
-            text.textContent = online ? 'CONNECTED' : 'DISCONNECTED';
+            const indicator = document.querySelector('.fps-indicator .num');
+            if (!online) {
+                indicator.style.color = 'var(--neon-red)';
+                document.getElementById('fpsTop').textContent = '--';
+                document.getElementById('fpsSide').textContent = '--';
+            } else {
+                indicator.style.color = 'var(--neon-blue)';
+            }
         }
 
         function showToast(msg) {
@@ -632,27 +631,8 @@
             toast.textContent = msg;
             toast.style.display = 'block';
             clearTimeout(toast._timeout);
-            toast._timeout = setTimeout(() => { toast.style.display = 'none'; }, 3000);
-        }
-
-        // ─── عند تغيير حجم الشاشة ───
-        window.addEventListener('resize', () => {
-            // الكانفاس يتأقلم تلقائياً مع CSS
-        });
-
-        // ─── الفل شاشة ───
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-
-        function handleFullscreenChange() {
-            if (document.fullscreenElement) {
-                document.getElementById('screenContainer').classList.add('fullscreen');
-            } else {
-                document.getElementById('screenContainer').classList.remove('fullscreen');
-            }
+            toast._timeout = setTimeout(() => { toast.style.display = 'none'; }, 2500);
         }
     </script>
 </body>
-    </html>
+</html>
