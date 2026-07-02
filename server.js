@@ -3,13 +3,13 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-// ─── سيرفر HTTP (لخدمة الـ Dashboard) ───
+// ─── سيرفر HTTP ───
 const server = http.createServer((req, res) => {
     if (req.url === '/') {
         fs.readFile(path.join(__dirname, 'dashboard.html'), (err, data) => {
             if (err) {
                 res.writeHead(500);
-                res.end('Error loading dashboard');
+                res.end('Error');
                 return;
             }
             res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -22,29 +22,27 @@ const server = http.createServer((req, res) => {
 });
 
 // ─── سيرفر WebSocket ───
-const wss = new WebSocket.Server({ 
-    server,
-    path: '/stream'
-});
+const wss = new WebSocket.Server({ server, path: '/stream' });
 
-// تخزين الاتصالات: deviceId → WebSocket
-const deviceConnections = new Map();
-// تخزين لوحات التحكم
-const viewers = [];
+const devices = new Map(); // deviceId → ws
+const viewers = new Map(); // viewerId → ws
+
+// تخزين آخر إطار لكل جهاز (للمشاهدين الجدد)
+const lastFrames = new Map();
 
 wss.on('connection', (ws, req) => {
-    // تصحيح قراءة الرابط ليتوافق مع بروتوكولات wss:// و ws:// عبر بيئة الاستضافة
-    const host = req.headers.host;
-    const url = new URL(req.url, `http://${host}`);
+    const url = new URL(req.url, `http://${req.headers.host}`);
     const deviceId = url.searchParams.get('device');
-    const type = url.searchParams.get('type') || 'device'; // 'device' or 'viewer'
+    const viewerId = url.searchParams.get('viewer') || Math.random().toString(36).substring(7);
+    const type = url.searchParams.get('type') || 'viewer';
 
-    console.log(`🔌 New connection: ${type} - ${deviceId || 'unknown'}`);
+    console.log(`🔌 ${type === 'device' ? '📱 Device' : '🖥️ Viewer'} connected: ${deviceId || viewerId}`);
 
     if (type === 'device') {
-        deviceConnections.set(deviceId, ws);
-        console.log(`📱 Device registered: ${deviceId}`);
-
+        // ─── اتصال جهاز ───
+        devices.set(deviceId, ws);
+        
+        // إعلام جميع المشاهدين
         broadcastToViewers({
             type: 'device_online',
             deviceId: deviceId,
@@ -52,60 +50,88 @@ wss.on('connection', (ws, req) => {
         });
 
         ws.on('message', (message) => {
-            const frameData = message.toString();
+            // استقبال الإطار
+            const frame = message.toString();
             
+            // حفظ آخر إطار
+            lastFrames.set(deviceId, {
+                image: frame,
+                timestamp: Date.now()
+            });
+            
+            // إعادة الإرسال للمشاهدين
             broadcastToViewers({
                 type: 'frame',
                 deviceId: deviceId,
-                image: frameData,
+                image: frame,
                 timestamp: Date.now()
             }, deviceId);
         });
 
         ws.on('close', () => {
             console.log(`📱 Device disconnected: ${deviceId}`);
-            deviceConnections.delete(deviceId);
-            
+            devices.delete(deviceId);
             broadcastToViewers({
                 type: 'device_offline',
-                deviceId: deviceId,
-                timestamp: Date.now()
+                deviceId: deviceId
             });
         });
 
-    } else if (type === 'viewer') {
-        const viewerId = url.searchParams.get('viewer') || Math.random().toString(36).substring(7);
-        viewers.push({ id: viewerId, ws: ws });
-
-        const devices = Array.from(deviceConnections.keys()).map(id => ({
+    } else {
+        // ─── اتصال مشاهد ───
+        viewers.set(viewerId, ws);
+        
+        // إرسال قائمة الأجهزة
+        const deviceList = Array.from(devices.keys()).map(id => ({
             id: id,
             online: true
         }));
+        
         ws.send(JSON.stringify({
             type: 'device_list',
-            devices: devices
+            devices: deviceList
         }));
 
+        // إرسال آخر إطار لكل جهاز (للمشاهد الجدد)
+        lastFrames.forEach((frame, devId) => {
+            if (Date.now() - frame.timestamp < 5000) { // فقط آخر 5 ثوانٍ
+                ws.send(JSON.stringify({
+                    type: 'frame',
+                    deviceId: devId,
+                    image: frame.image,
+                    timestamp: frame.timestamp
+                }));
+            }
+        });
+
         ws.on('close', () => {
-            const index = viewers.findIndex(v => v.id === viewerId);
-            if (index !== -1) viewers.splice(index, 1);
+            viewers.delete(viewerId);
         });
     }
 });
 
-function broadcastToViewers(data, filterDeviceId = null) {
+// ─── تنقية الإطارات القديمة كل دقيقة ───
+setInterval(() => {
+    const now = Date.now();
+    lastFrames.forEach((frame, deviceId) => {
+        if (now - frame.timestamp > 10000) {
+            lastFrames.delete(deviceId);
+        }
+    });
+}, 60000);
+
+function broadcastToViewers(data, excludeDevice = null) {
     const message = JSON.stringify(data);
-    viewers.forEach(viewer => {
-        if (viewer.ws.readyState === WebSocket.OPEN) {
-            viewer.ws.send(message);
+    viewers.forEach((ws) => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(message);
         }
     });
 }
 
-// ─── تعديل تهيئة تشغيل السيرفر للتوافق السحابي ───
-// هنا نتحقق إذا كان هناك منفذ ممرر من Render، وإلا نستخدم 8080 محلياً
+// ─── تشغيل ───
 const PORT = process.env.PORT || 8080;
-
-server.listen(PORT, () => {
-    console.log(`🚀 Server fully operational on port: ${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+    console.log(`📡 WebSocket on ws://0.0.0.0:${PORT}/stream`);
 });
